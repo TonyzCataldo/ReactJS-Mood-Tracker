@@ -1,0 +1,24 @@
+@font-face {
+  font-family: "RedditSans";
+  src: url("./assets/fonts/RedditSans-VariableFont_wght.ttf") format("truetype");
+  font-weight: 100 900;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "RedditSans";
+  src: url("./assets/fonts/RedditSans-Italic-VariableFont_wght.ttf")
+    format("truetype");
+  font-weight: 100 900;
+  font-style: italic;
+}
+@import "tailwindcss";
+
+@theme {
+  --font-RedditSans: "RedditSans", "sans-serif";
+  --color-neutral-900: #21214d;
+  --color-neutral-600: #57577b;
+  --color-neutral-300: #9393b7;
+  --color-blue-600: #4865db;
+  --color-blue-100: #e0e6fa;
+}
