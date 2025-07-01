@@ -4,10 +4,12 @@ import { formReducer, initialState } from "../reducers/authFormReducer";
 import { useReducer } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useAuth } from "../context/AuthContext";
 
-const SignIn = ({ onLogin }: { onLogin: () => void }) => {
+const SignIn = () => {
   const [state, dispatch] = useReducer(formReducer, initialState);
   const navigate = useNavigate();
+  const { setIsAuthenticated } = useAuth();
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,7 +34,7 @@ const SignIn = ({ onLogin }: { onLogin: () => void }) => {
       localStorage.setItem("usuario_id", response.data.usuario_id);
 
       dispatch({ type: "RESET_FORM" });
-      onLogin();
+      setIsAuthenticated(true);
       navigate("/dashboard");
     } catch (err: any) {
       dispatch({

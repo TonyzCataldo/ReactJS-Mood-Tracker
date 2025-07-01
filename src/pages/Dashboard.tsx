@@ -1,19 +1,15 @@
-import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import Header from "../components/Header";
+import { useAuth } from "../context/AuthContext";
+import DefaultContainer from "../components/DefaultContainer";
+import SettingsHeader from "../components/SettingsHeader";
+import ProfileForm from "../components/ProfileForm";
 
-const Dashboard = ({ onLogout }: { onLogout: () => void }) => {
-  const navigate = useNavigate();
-
-  const [nome, setNome] = useState<string | null>(localStorage.getItem("nome"));
-  const [email, setEmail] = useState<string | null>(
-    localStorage.getItem("email")
-  );
+const Dashboard = () => {
+  const { nome, email, imagem, setNome, setEmail, setImagem } = useAuth();
   const [imagemCarregou, setImagemCarregou] = useState(false);
-  const [imagem, setImagem] = useState<string | null>(
-    localStorage.getItem("imagem_url")
-  );
+  const [settingsIsVisible, setSettingsIsVisible] = useState(false);
 
   useEffect(() => {
     if (!nome || !imagem || !email) {
@@ -50,31 +46,16 @@ const Dashboard = ({ onLogout }: { onLogout: () => void }) => {
   if (!nome || !imagem) return null;
 
   return (
-    <div className="pt-8 md:pt-10 flex flex-col items-center">
+    <div className="pt-8 md:pt-10 pb-20  flex flex-col items-center">
       <Header
-        nome={nome}
-        setNome={setNome}
-        imagem={imagem}
-        setImagem={setImagem}
         imagemCarregou={imagemCarregou}
         setImagemCarregou={setImagemCarregou}
-        email={email}
-        setEmail={setEmail}
+        setSettingsIsVisible={setSettingsIsVisible}
       />
-
-      <button
-        onClick={() => {
-          localStorage.removeItem("token");
-          localStorage.removeItem("usuario_id");
-          localStorage.removeItem("nome");
-          localStorage.removeItem("imagem_url");
-
-          onLogout();
-          navigate("/signin");
-        }}
-      >
-        Logout
-      </button>
+      <DefaultContainer py={"settings"} settingsIsVisible={settingsIsVisible}>
+        <SettingsHeader />
+        <ProfileForm />
+      </DefaultContainer>
     </div>
   );
 };

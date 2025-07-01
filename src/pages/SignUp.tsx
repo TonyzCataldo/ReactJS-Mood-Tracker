@@ -2,11 +2,13 @@ import logo from "../assets/logo.svg";
 import SignMain from "../components/SignMain";
 import { formReducer, initialState } from "../reducers/authFormReducer";
 import { useReducer } from "react";
-
+import { useAuth } from "../context/AuthContext";
 import axios from "axios";
 
-const SignUp = ({ onSignUp }: { onSignUp: () => void }) => {
+const SignUp = () => {
   const [state, dispatch] = useReducer(formReducer, initialState);
+
+  const { setIsAuthenticated, setOnboardingRequired } = useAuth();
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,7 +37,8 @@ const SignUp = ({ onSignUp }: { onSignUp: () => void }) => {
       localStorage.setItem("usuario_id", loginResponse.data.usuario_id);
 
       dispatch({ type: "RESET_FORM" });
-      onSignUp();
+      setIsAuthenticated(true);
+      setOnboardingRequired(true);
     } catch (err: any) {
       dispatch({
         type: "SET_ERRO",

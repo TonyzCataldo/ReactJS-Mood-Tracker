@@ -1,44 +1,14 @@
 import { Routes, Route, Navigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+
 import SignUp from "./pages/SignUp";
 import SignIn from "./pages/SignIn";
 import Dashboard from "./pages/Dashboard";
 import PrivateRoute from "./routes/PrivateRoute";
 import OnBoarding from "./pages/OnBoarding";
-
-import api from "./axios/api";
+import { useAuth } from "./context/AuthContext";
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() =>
-    Boolean(localStorage.getItem("token"))
-  );
-
-  const [onboardingRequired, setOnboardingRequired] = useState<boolean | null>(
-    null
-  );
-
-  const fetchOnboardingStatus = async () => {
-    const token = localStorage.getItem("token");
-    if (!token) return;
-
-    try {
-      const response = await api.get("/check-onboarding", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      const required = response.data.onboarding_required;
-
-      setOnboardingRequired(required);
-    } catch (error) {
-      console.error("Erro ao checar onboarding:", error);
-    }
-  };
-
-  useEffect(() => {
-    if (isAuthenticated) {
-      fetchOnboardingStatus();
-    }
-  }, [isAuthenticated]);
+  const { isAuthenticated, onboardingRequired } = useAuth();
 
   //console.log(localStorage.getItem("token"));
   //console.log(isAuthenticated);
@@ -73,26 +43,13 @@ function App() {
           <Route
             path="/signin"
             element={
-              isAuthenticated ? (
-                <Navigate to="/dashboard" />
-              ) : (
-                <SignIn onLogin={() => setIsAuthenticated(true)} />
-              )
+              isAuthenticated ? <Navigate to="/dashboard" /> : <SignIn />
             }
           />
           <Route
             path="/signup"
             element={
-              isAuthenticated ? (
-                <Navigate to="/dashboard" />
-              ) : (
-                <SignUp
-                  onSignUp={() => {
-                    setIsAuthenticated(true);
-                    setOnboardingRequired(true);
-                  }}
-                />
-              )
+              isAuthenticated ? <Navigate to="/dashboard" /> : <SignUp />
             }
           />
           <Route
@@ -102,12 +59,7 @@ function App() {
                 isAuthenticated={isAuthenticated}
                 onboardingRequired={onboardingRequired}
               >
-                <Dashboard
-                  onLogout={() => {
-                    setIsAuthenticated(false);
-                    setOnboardingRequired(null); // limpa onboarding
-                  }}
-                />
+                <Dashboard />
               </PrivateRoute>
             }
           />
@@ -115,12 +67,7 @@ function App() {
             path="/onboarding"
             element={
               onboardingRequired === true ? (
-                <OnBoarding
-                  onFinish={() => {
-                    setOnboardingRequired(false);
-                    fetchOnboardingStatus(); // 🔁 força recarregar status da API
-                  }}
-                />
+                <OnBoarding />
               ) : (
                 <Navigate to="/dashboard" />
               )

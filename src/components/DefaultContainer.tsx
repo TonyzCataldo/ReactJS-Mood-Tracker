@@ -1,6 +1,11 @@
-const DefaultContainer = ({ children, py }) => {
+const DefaultContainer = ({ children, py, settingsIsVisible }) => {
+  const paddingYclassname =
+    py === "settings" ? "py-10 md:py-12" : "py-8 md:py-12";
+
   return (
-    <div className={`flex relative flex-col px-5 md:px-10 rounded-2xl ${py}`}>
+    <div
+      className={`flex relative flex-col px-5 md:px-10 rounded-2xl mt-56 ${paddingYclassname}`}
+    >
       <svg
         className="absolute top-[17.5px] right-[16.5px] md:top-[30px] md:right-[30px]"
         width="15"

@@ -3,14 +3,12 @@ import logo from "../assets/logo.svg";
 import axios from "axios";
 import ProfileForm from "../components/ProfileForm";
 import { useRef } from "react";
+import { useAuth } from "../context/AuthContext";
 
-type OnBoardingProps = {
-  onFinish: () => void;
-};
-
-const OnBoarding = ({ onFinish }: OnBoardingProps) => {
+const OnBoarding = () => {
   const navigate = useNavigate();
-  console.log("Renderizou OnBoarding");
+
+  const { fetchOnboardingStatus, setOnboardingRequired } = useAuth();
 
   const nameRef = useRef<HTMLInputElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -18,9 +16,9 @@ const OnBoarding = ({ onFinish }: OnBoardingProps) => {
   const uploadImageToCloudinary = async (file: File) => {
     const formData = new FormData();
     formData.append("file", file);
-    formData.append("upload_preset", "mood_project"); // seu preset
+    formData.append("upload_preset", "mood_preset");
 
-    const res = await fetch(
+    const response = await fetch(
       "https://api.cloudinary.com/v1_1/di8rehik4/image/upload",
       {
         method: "POST",
@@ -28,8 +26,12 @@ const OnBoarding = ({ onFinish }: OnBoardingProps) => {
       }
     );
 
-    const data = await res.json();
-    return data.secure_url; // URL da imagem hospedada
+    const data = await response.json();
+
+    return {
+      url: data.secure_url,
+      public_id: data.public_id,
+    };
   };
 
   //funcao que por hora seta no usuario o onboarding como false e direciona pra dashboard depois vai tambem enviar nome e img pro usuario
@@ -38,11 +40,15 @@ const OnBoarding = ({ onFinish }: OnBoardingProps) => {
 
     const name = nameRef.current?.value;
     const file = fileRef.current?.files?.[0];
-    let imagemUrl = "/avatar-placeholder.svg";
+
+    let imagemUrl = "/avatar-placeholder.svg"; // default
+    let imagemPublicId = "";
 
     try {
       if (file) {
-        imagemUrl = await uploadImageToCloudinary(file);
+        const uploadResult = await uploadImageToCloudinary(file);
+        imagemUrl = uploadResult.url; // era uploadResult.secure_url
+        imagemPublicId = uploadResult.public_id;
       }
 
       const token = localStorage.getItem("token");
@@ -50,6 +56,7 @@ const OnBoarding = ({ onFinish }: OnBoardingProps) => {
       const formData = new FormData();
       formData.append("nome", name || "Jane Appleseed");
       formData.append("imagem_url", imagemUrl);
+      formData.append("imagem_public_id", imagemPublicId);
 
       await axios.post("http://localhost:5000/onboarding", formData, {
         headers: {
@@ -57,7 +64,9 @@ const OnBoarding = ({ onFinish }: OnBoardingProps) => {
         },
       });
 
-      onFinish(); // atualiza o estado no App.tsx
+      fetchOnboardingStatus();
+      setOnboardingRequired(false);
+
       navigate("/dashboard");
     } catch (error) {
       console.error("Erro ao atualizar onboarding_required:", error);
