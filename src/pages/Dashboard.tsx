@@ -152,7 +152,12 @@ const Dashboard = () => {
 
   //espera definir aquilo que for necessario ao montar o componente para somente depois mostrar o dashboard ao user
   if (!nome || !imagem || logedToday === null || fetchingRecords === true)
-    return null;
+    return (
+      <div className="flex justify-center items-center h-[60vh] text-gray-600 text-lg">
+        <div className="w-6 h-6 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin mr-2" />
+        Loading...
+      </div>
+    );
 
   return (
     <div className="pt-8 md:pt-10 pb-20 relative flex flex-col items-center">
