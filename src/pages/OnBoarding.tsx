@@ -24,7 +24,7 @@ const OnBoarding = () => {
     try {
       // 1. Envia apenas o nome para /onboarding
       await axios.post(
-        "http://localhost:5000/onboarding",
+        "https://mood-api-k2mz.onrender.com/onboarding",
         { nome: name || "Jane Appleseed" },
         {
           headers: {
@@ -39,11 +39,15 @@ const OnBoarding = () => {
         const formData = new FormData();
         formData.append("imagem", file);
 
-        await axios.post("http://localhost:5000/upload-image", formData, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        await axios.post(
+          "https://mood-api-k2mz.onrender.com/upload-image",
+          formData,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
       }
 
       // 3. Atualiza contexto e navega

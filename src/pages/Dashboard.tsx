@@ -44,7 +44,7 @@ const Dashboard = () => {
     if (!token) return;
 
     try {
-      const res = await axios.get("http://localhost:5000/me", {
+      const res = await axios.get("https://mood-api-k2mz.onrender.com/me", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -75,7 +75,7 @@ const Dashboard = () => {
     try {
       // 1. Envia apenas o nome para /onboarding
       await axios.post(
-        "http://localhost:5000/onboarding",
+        "https://mood-api-k2mz.onrender.com/onboarding",
         { nome: name || "Jane Appleseed" },
         {
           headers: {
@@ -90,11 +90,15 @@ const Dashboard = () => {
         const formData = new FormData();
         formData.append("imagem", file);
 
-        await axios.post("http://localhost:5000/upload-image", formData, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        await axios.post(
+          "https://mood-api-k2mz.onrender.com/upload-image",
+          formData,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
       }
 
       fetchUserData();
@@ -115,11 +119,14 @@ const Dashboard = () => {
     const verifyLogedToday = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await axios.get("http://localhost:5000/ja-registrou-hoje", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const res = await axios.get(
+          "https://mood-api-k2mz.onrender.com/ja-registrou-hoje",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
 
         setLogedToday(res.data.ja_registrou);
       } catch (error) {

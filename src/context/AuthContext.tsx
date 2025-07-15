@@ -96,11 +96,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const fetchUserMoodRecords = async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.get("http://localhost:5000/registros", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const res = await axios.get(
+        "https://mood-api-k2mz.onrender.com/registros",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       console.log("Registros recebidos:", res.data);
       return res.data; // isso é um array com os últimos 11 registros

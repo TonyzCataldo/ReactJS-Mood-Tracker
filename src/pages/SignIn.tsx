@@ -25,10 +25,13 @@ const SignIn = () => {
     }
 
     try {
-      const response = await axios.post("http://localhost:5000/login", {
-        email: state.email,
-        senha: state.senha,
-      });
+      const response = await axios.post(
+        "https://mood-api-k2mz.onrender.com/login",
+        {
+          email: state.email,
+          senha: state.senha,
+        }
+      );
 
       localStorage.setItem("token", response.data.token);
       localStorage.setItem("usuario_id", response.data.usuario_id);

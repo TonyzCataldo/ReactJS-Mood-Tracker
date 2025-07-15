@@ -29,7 +29,7 @@ const LogSlider = ({ phase, setPhase, setLogIsVisible }: LogSliderProps) => {
     try {
       const token = localStorage.getItem("token");
       const res = await axios.post(
-        "http://localhost:5000/registro",
+        "https://mood-api-k2mz.onrender.com/registro",
         {
           humor: logData.humor,
           como_se_sentiu: logData.tags.join(", "),
