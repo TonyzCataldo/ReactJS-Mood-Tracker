@@ -68,7 +68,7 @@ const SignIn = () => {
         isVisible={apiMessage}
         setIsVisible={setApiMessage}
       >
-        <div className="flex flex-col items-center gap-14">
+        <div className="flex flex-col items-center gap-56">
           <h2 className="font-RedditSans text-[2rem]/[140%] tracking-[-0.019rem] font-bold text-neutral-900">
             Please wait around 50 seconds for the API to work.
           </h2>

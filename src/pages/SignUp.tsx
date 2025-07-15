@@ -1,14 +1,15 @@
 import logo from "../assets/logo.svg";
 import SignMain from "../components/SignMain";
 import { formReducer, initialState } from "../reducers/authFormReducer";
-import { useReducer } from "react";
+import { useReducer, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import axios from "axios";
 import { AxiosError } from "axios";
+import DefaultContainer from "../components/DefaultContainer";
 
 const SignUp = () => {
   const [state, dispatch] = useReducer(formReducer, initialState);
-
+  const [apiMessage, setApiMessage] = useState(true);
   const { setIsAuthenticated, setOnboardingRequired } = useAuth();
 
   const handleSignUp = async (e: React.FormEvent) => {
@@ -67,6 +68,20 @@ const SignUp = () => {
         state={state}
         dispatch={dispatch}
       />
+      <DefaultContainer
+        py="settings"
+        isVisible={apiMessage}
+        setIsVisible={setApiMessage}
+      >
+        <div className="flex flex-col items-center gap-56">
+          <h2 className="font-RedditSans text-[2rem]/[140%] tracking-[-0.019rem] font-bold text-neutral-900">
+            Please wait around 50 seconds for the API to work.
+          </h2>
+          <h2 className="font-RedditSans text-[2rem]/[140%] tracking-[-0.019rem] font-bold text-neutral-900">
+            Por favor aguarde cerca de 50 segundos para que a API funcione.
+          </h2>
+        </div>
+      </DefaultContainer>
     </div>
   );
 };
