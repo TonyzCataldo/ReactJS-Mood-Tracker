@@ -83,6 +83,29 @@ const Phase2 = ({ next, phase }: PhaseProps) => {
                 }
               })
             }
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                setLogData((prev) => {
+                  const tagMarked = prev.tags.includes(tag);
+                  const tagslimit = 3;
+
+                  if (tagMarked) {
+                    return {
+                      ...prev,
+                      tags: prev.tags.filter((t) => t !== tag),
+                    };
+                  } else if (prev.tags.length < tagslimit) {
+                    return {
+                      ...prev,
+                      tags: [...prev.tags, tag],
+                    };
+                  } else {
+                    return prev;
+                  }
+                });
+              }
+            }}
           >
             <FeelTags tag={tag} />
           </div>

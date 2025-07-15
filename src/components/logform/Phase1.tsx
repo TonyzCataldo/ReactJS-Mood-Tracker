@@ -55,6 +55,12 @@ const Phase1 = ({ next, phase }: PhaseProps) => {
                 ? { borderColor: "#4865db" }
                 : { borderColor: "#E0E6FA" }
             }
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                setLogData((prev) => ({ ...prev, humor: option }));
+              }
+            }}
           >
             <span
               className={`w-5 h-5 rounded-full ${

@@ -23,7 +23,7 @@ const Button = ({
     <button
       disabled={!!formSubmit && logData.horasSono === ""}
       type="submit"
-      className={`text-white font-RedditSans px-8 font-semibold rounded-[10px]  ${
+      className={`text-white font-RedditSans px-8 font-semibold rounded-[10px] hover:bg-blue-700 ${
         !!formSubmit && logData.horasSono === ""
           ? "bg-[#4865dbb3]"
           : "bg-blue-600 cursor-pointer"

@@ -10,6 +10,10 @@ import Button from "../components/Button";
 import LogHeader from "../components/LogHeader";
 import LogSlider from "../components/LogSlider";
 import UserResultContainer from "../components/UserResultContainer";
+import TrendContainer from "../components/TrendContainer";
+import TodayMood from "../components/TodayMood";
+import TodaySleep from "../components/TodaySleep";
+import TodayReflection from "../components/TodayReflection";
 
 const Dashboard = () => {
   const {
@@ -23,9 +27,9 @@ const Dashboard = () => {
     logedToday,
     setUserMoodRecord,
     fetchUserMoodRecords,
-    userMoodRecord,
   } = useAuth();
   const [imagemCarregou, setImagemCarregou] = useState(false);
+  const [fetchingRecords, setFetchingRecords] = useState(true);
 
   const [settingsIsVisible, setSettingsIsVisible] = useState(false);
   const [logIsVisible, setLogIsVisible] = useState(false);
@@ -123,6 +127,7 @@ const Dashboard = () => {
       }
     };
     verifyLogedToday();
+    console.log(logedToday);
   }, []);
 
   //verifica os registros do usuario ao montar o componente
@@ -130,6 +135,7 @@ const Dashboard = () => {
     const getRecords = async () => {
       const records = await fetchUserMoodRecords();
       setUserMoodRecord(records);
+      setFetchingRecords(false);
     };
 
     getRecords();
@@ -138,7 +144,7 @@ const Dashboard = () => {
   console.log(logedToday);
 
   //espera definir aquilo que for necessario ao montar o componente para somente depois mostrar o dashboard ao user
-  if (!nome || !imagem || logedToday === null || userMoodRecord.length === 0)
+  if (!nome || !imagem || logedToday === null || fetchingRecords === true)
     return null;
 
   return (
@@ -175,7 +181,7 @@ const Dashboard = () => {
       <main className="w-[91.47%] md:w-[91.665%] max-w-[73.125rem] mt-12 md:mt-16 flex flex-col items-center">
         <HelloContainer />
         <form
-          className={`justify-center mt-12 lg:mt-16 ${
+          className={`justify-center my-12 lg:my-16 ${
             logedToday === false ? "flex" : "hidden"
           }`}
           onSubmit={(e) => {
@@ -205,8 +211,21 @@ const Dashboard = () => {
             setLogIsVisible={setLogIsVisible}
           />
         </DefaultContainer>
-        <UserResultContainer />
-        <p className="mt-[650px]">asdadsa</p>
+        <div
+          className={`${
+            logedToday === true ? "flex" : "hidden"
+          } w-full flex-col gap-5 mt-12 mb-8 lg:mt-16 lg:flex-row lg:gap-8`}
+        >
+          <TodayMood />
+          <div className="flex flex-col gap-5 lg:w-[39.1%] lg:justify-between">
+            <TodaySleep />
+            <TodayReflection />
+          </div>
+        </div>
+        <div className="flex flex-col w-full gap-8 min-[780px]:flex-row">
+          <UserResultContainer />
+          <TrendContainer />
+        </div>
       </main>
     </div>
   );

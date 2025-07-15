@@ -32,92 +32,12 @@ type CompleteResult = {
 const UserResultContainer = () => {
   const { userMoodRecord } = useAuth();
 
-  const result: CompleteResult = ((records: { humor: string | null }[]) => {
+  const result: CompleteResult = ((records) => {
     const scale = ["Very Sad", "Sad", "Neutral", "Happy", "Very Happy"];
     const lastFive = records.slice(-5);
 
-    //caso crucial onde o usuario tem registrado normalmente todos os dias e entra para logar o dia atual
-    if (
-      lastFive.filter((day) => day.humor === null).length === 1 &&
-      lastFive[4].humor === null
-    ) {
-      const lastFour = lastFive.slice(0, 4);
-
-      //pego dos ultimos 4 registros acesso o humor e vejo quantas vezes repete esse humor retornando objeto com happy: 2 sad: 1 etc
-      const count = lastFour.reduce<Record<string, number>>(
-        (acc, { humor }) => {
-          if (humor) acc[humor] = (acc[humor] || 0) + 1;
-          return acc;
-        },
-        {}
-      );
-
-      //separo os valores de count, gerando um array de arrays [[happy, 2] [sad, 1]] etc
-      const entries = Object.entries(count);
-
-      let mostCommonMood = "Neutral";
-
-      //se só tiver um array é pq foram todos os 4 o mesmo humor
-      if (entries.length === 1) {
-        mostCommonMood = entries[0][0];
-        //se tem 4 arrays é pq cada um dos 4 é um diferente e então define como neutral
-      } else if (entries.length === 4) {
-        mostCommonMood = "Neutral";
-      }
-
-      //aqui é o seguinte caso tenha 2 humores escolhidos duas vezes desempata
-      else if (
-        entries.length === 2 &&
-        entries.filter(([, v]) => v === 2).length === 2
-      ) {
-        const twoItems = entries.filter(([, v]) => v === 2);
-        const sorted = [...twoItems].sort(
-          ([moodA], [moodB]) => scale.indexOf(moodB) - scale.indexOf(moodA)
-        );
-        mostCommonMood = sorted[0][0];
-      }
-      //caso onde um humor é mais escolhido
-      else {
-        const mostChoseMood = entries.reduce((maxEntry, currentEntry) => {
-          return currentEntry[1] > maxEntry[1] ? currentEntry : maxEntry;
-        })[0];
-        mostCommonMood = mostChoseMood;
-      }
-      const score = (mood: string) => scale.indexOf(mood);
-
-      // Criamos um array com os valores numéricos dos humores
-      // Exemplo: ["Very sad", "Sad", "Happy"] → [0, 1, 3]
-      const diffs = lastFive.map((d) => score(d.humor!));
-
-      // Calculamos a tendência somando as diferenças entre dias consecutivos:
-      // (dia2 - dia1) + (dia3 - dia2) + ... + (dia5 - dia4)
-      // Isso mostra se o humor está melhorando, piorando ou estável no geral
-
-      const totalChange = diffs
-        .slice(1)
-        .reduce((acc, curr, i) => acc + (curr - diffs[i]), 0);
-
-      const trend =
-        totalChange > 0
-          ? "Increase from the previous 5 check-ins"
-          : totalChange < 0
-          ? "Decrease from the previous 5 check-ins"
-          : "same as the previous 5 check-ins";
-
-      const trendArrow =
-        trend === "same as the previous 5 check-ins"
-          ? sameSvg
-          : trend === "Decrease from the previous 5 check-ins"
-          ? fallingSvg
-          : risingSvg;
-      return {
-        mostCommonMood,
-        trend: trend,
-        trendArrow: trendArrow,
-      };
-    } //teste
     // CASO COM NULL retorna o keep tracking
-    if (lastFive.some((day) => day.humor === null)) {
+    if (lastFive.length < 5) {
       return {
         mostCommonMood: "Keep tracking",
         trend: "Log 5 check-ins to see your average mood.",
@@ -304,7 +224,7 @@ const UserResultContainer = () => {
 
   const sleepResult = ((records) => {
     const lastFive = records.slice(-5);
-    const lastFourSleep = lastFive.slice(0, 4).map((day) => day.horas_sono);
+
     const sleepParameter = {
       "0-2 hours": 1,
       "3-4 hours": 3.5,
@@ -312,53 +232,7 @@ const UserResultContainer = () => {
       "7-8 hours": 7.5,
       "9+ hours": 9,
     };
-    if (
-      lastFive.filter((day) => day.horas_sono === null).length === 1 &&
-      lastFive[4].horas_sono === null
-    ) {
-      const numericSleepValues = lastFourSleep.map(
-        (value) => sleepParameter[value as keyof typeof sleepParameter]
-      );
-      const total = numericSleepValues.reduce((acc, curr) => acc + curr);
-      const average = total / 4;
-      const finalSleepResult =
-        average < 2.25
-          ? "0-2 Hours"
-          : average < 4.5
-          ? "3-4 Hours"
-          : average < 6.5
-          ? "5-6 Hours"
-          : average < 8.25
-          ? "7-8 Hours"
-          : "9+ Hours";
-
-      const trendValue = numericSleepValues
-        .slice(1)
-        .reduce((acc, curr, i) => acc + (curr - numericSleepValues[i]), 0);
-
-      const sleepTrend =
-        trendValue > 0
-          ? "Increase from the previous 5 check-ins"
-          : trendValue < 0
-          ? "Decrease from the previous 5 check-ins"
-          : "Same as the previous 5 check-ins";
-
-      const trendEmoji =
-        sleepTrend === "Increase from the previous 5 check-ins"
-          ? risingSvgWhite
-          : sleepTrend === "Decrease from the previous 5 check-ins"
-          ? fallingSvgWhite
-          : sameSvgWhite;
-      return {
-        text: finalSleepResult,
-        info: sleepTrend,
-        bg: "bg-blue-600",
-        emoji: zzzSvg,
-        arrow: trendEmoji,
-        color1: "text-white",
-        color2: "text-white/70",
-      };
-    } else if (lastFive.filter((day) => day.horas_sono !== null).length !== 5) {
+    if (lastFive.length < 5) {
       return {
         text: "Not enough data yet!",
         info: "Track 5 nights to view average sleep.",
@@ -415,7 +289,7 @@ const UserResultContainer = () => {
   })(userMoodRecord);
 
   return (
-    <section className="py-5 px-4 md:px-6 md:py-6 gap-6 flex flex-col bg-white w-full rounded-2xl">
+    <section className="py-5 px-4 md:px-6 md:py-6 gap-6 flex flex-col bg-white w-full border border-blue-100 rounded-2xl min-[780px]:max-w-[370px] min-[1170px]:min-w-[305px]">
       <ResultCard
         averageResult={averageMoodResult}
         information="Average Mood"
