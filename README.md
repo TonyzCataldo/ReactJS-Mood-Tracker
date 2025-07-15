@@ -1,5 +1,7 @@
 # (Frontend Mentor) Mood Tracker 🧠🌙
 
+## 🇧🇷 Português
+
 Aplicação web para registrar e acompanhar o humor, sono e emoções diárias. Os usuários podem criar uma conta, fazer check-ins diários e visualizar tendências do seu bem-estar ao longo do tempo.
 
 ## 🚀 Funcionalidades
@@ -13,11 +15,45 @@ Aplicação web para registrar e acompanhar o humor, sono e emoções diárias. 
 
 ## 🧮 Cálculo
 
-- Na parte da média do humor se eu calculasse a média de maneira mátematica o comportamento seria o seguinte: no caso de 3 "very happy" e 2 "neutral" a média seria happy... porém não gostei desse comportamento pois no gráfico não teria nenhum happy e o usuario não teria escolhido nenhum happy mas mesmo assim o average mood seria happy. Então eu decidi fazer da seguinte forma: se um humor repetir mais do que os outros ele será o escolhido, se o usuário escolher um de cada o escolhido será "neutral" e por último se houver empate de 2 2 o humor será definido com base no outro humor exemplo: 2 very happy 2 neutral e 1 happy o humor escolhido será very happy pois o happy puxa mais pro "very happy" do que pro "neutral".
+- **Média do humor:**  
+  Se um humor aparecer mais vezes que os outros, ele será escolhido.  
+  Se houver empate (ex: 2 "very happy", 2 "neutral", 1 "happy"), o humor desempata com base na proximidade entre os outros — o "happy" puxa para o "very happy", então ele é o escolhido.  
+  Se houver um de cada, o resultado será "neutral".
 
-- Na parte das datas do gráfico eu pego os registros e ordeno a sequencia das datas e quando acaba os registros preencho até completar 11 com as datas anteriores da data do registro mais antigo e caso o usuário não tenha nenhum registro coloco a data atual e vou preenchendo com as datas anteriores até completar os 11.
+- **Datas do gráfico:**  
+  Ordeno os registros pelas datas mais recentes. Caso o usuário tenha menos de 11 registros, completo com datas anteriores, retrocedendo a partir da mais antiga. Se não houver nenhum registro, começo com a data de hoje e retrocedo até completar 11.
 
 ## 📸 Screenshots
 
-![Registros vazios e sem registro diário](./public/empty-screenshot.PNG)
+![Registros vazios e sem registro diário](./public/empty-screenshot.PNG)  
 ![Alguns registros e com registro diário](./public/fullloged-screenshot.PNG)
+
+---
+
+## 🇺🇸 English
+
+Web application to record and track daily mood, sleep, and emotions. Users can create an account, log daily check-ins, and view their well-being trends over time.
+
+## 🚀 Features
+
+- User registration and login
+- Customizable name and profile picture
+- Daily mood and sleep tracking
+- Visual chart showing the last 11 records
+- Section that calculates and displays the average mood from the last 5 check-ins
+- Section that displays the average sleep duration from the last 5 check-ins
+
+## 🧮 Logic
+
+- **Average mood:**  
+  If one mood appears more than others, it is chosen.  
+  If there's a tie (e.g. 2 "very happy", 2 "neutral", 1 "happy"), the third mood is used to break the tie — "happy" leans more towards "very happy", so that one is chosen.  
+  If there’s one of each mood, the result will be "neutral".
+
+- **Chart dates:**  
+  Dates are sorted from the most recent. If there are fewer than 11 records, older dates are filled in retroactively. If no records exist, the chart starts from today and fills backward until 11 days are reached.
+
+## 📸 Screenshots
+
+![Empty records, no daily log](./public/empty-screenshot.PNG)  
+![Some records and daily log filled](./public/fullloged-screenshot.PNG)
