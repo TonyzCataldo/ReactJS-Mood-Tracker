@@ -67,12 +67,12 @@ const SignUp = () => {
         state={state}
         dispatch={dispatch}
       />
-      <div className="flex flex-col mt-8 gap-4">
+      <div className="flex flex-col mt-8 gap-4 items-center">
         <p className="font-RedditSans text-[0.938rem]/[140%] tracking-[-0.019rem] font-medium text-neutral-900">
-          Please wait around 50 seconds for the API to work.
+          *Please wait around 50 seconds for the API to work.
         </p>
         <p className="font-RedditSans text-[0.938rem]/[140%] tracking-[-0.019rem] font-medium text-neutral-900">
-          Por favor espere 50 segundos para que a API funcione.
+          *Por favor espere 50 segundos para que a API funcione.
         </p>
       </div>
     </div>
