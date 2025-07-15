@@ -1,15 +1,14 @@
 import logo from "../assets/logo.svg";
 import SignMain from "../components/SignMain";
 import { formReducer, initialState } from "../reducers/authFormReducer";
-import { useReducer, useState } from "react";
+import { useReducer } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
-import DefaultContainer from "../components/DefaultContainer";
 
 const SignIn = () => {
   const [state, dispatch] = useReducer(formReducer, initialState);
-  const [apiMessage, setApiMessage] = useState(true);
+
   const navigate = useNavigate();
   const { setIsAuthenticated } = useAuth();
 
@@ -63,20 +62,14 @@ const SignIn = () => {
         state={state}
         dispatch={dispatch}
       />
-      <DefaultContainer
-        py="settings"
-        isVisible={apiMessage}
-        setIsVisible={setApiMessage}
-      >
-        <div className="flex flex-col items-center gap-56">
-          <h2 className="font-RedditSans text-[2rem]/[140%] tracking-[-0.019rem] font-bold text-neutral-900">
-            Please wait around 50 seconds for the API to work.
-          </h2>
-          <h2 className="font-RedditSans text-[2rem]/[140%] tracking-[-0.019rem] font-bold text-neutral-900">
-            Por favor aguarde cerca de 50 segundos para que a API funcione.
-          </h2>
-        </div>
-      </DefaultContainer>
+      <div className="flex flex-col mt-8 gap-4">
+        <p className="font-RedditSans text-[0.938rem]/[140%] tracking-[-0.019rem] font-medium text-neutral-900">
+          Please wait around 50 seconds for the API to work.
+        </p>
+        <p className="font-RedditSans text-[0.938rem]/[140%] tracking-[-0.019rem] font-medium text-neutral-900">
+          Por favor espere 50 segundos para que a API funcione.
+        </p>
+      </div>
     </div>
   );
 };
