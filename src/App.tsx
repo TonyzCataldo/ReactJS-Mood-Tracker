@@ -11,7 +11,7 @@ function App() {
   const { isAuthenticated, onboardingRequired } = useAuth();
 
   //console.log(localStorage.getItem("token"));
-  //console.log(isAuthenticated);
+  console.log(isAuthenticated);
 
   //console.log(onboardingRequired);
   //console.log(localStorage.getItem("imagem_url"));

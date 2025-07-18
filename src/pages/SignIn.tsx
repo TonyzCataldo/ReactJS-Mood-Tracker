@@ -1,7 +1,7 @@
 import logo from "../assets/logo.svg";
 import SignMain from "../components/SignMain";
 import { formReducer, initialState } from "../reducers/authFormReducer";
-import { useReducer } from "react";
+import { useReducer, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
@@ -47,6 +47,14 @@ const SignIn = () => {
       });
     }
   };
+
+  useEffect(() => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("usuario_id");
+    localStorage.removeItem("nome");
+    localStorage.removeItem("email");
+    localStorage.removeItem("imagem_url");
+  }, []);
 
   return (
     <div className="flex flex-col items-center py-20">

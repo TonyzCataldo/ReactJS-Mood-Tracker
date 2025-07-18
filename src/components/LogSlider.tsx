@@ -20,8 +20,13 @@ type PhaseProps = {
 };
 
 const LogSlider = ({ phase, setPhase, setLogIsVisible }: LogSliderProps) => {
-  const { logData, setLogedToday, fetchUserMoodRecords, setUserMoodRecord } =
-    useAuth();
+  const {
+    logData,
+    setLogedToday,
+    fetchUserMoodRecords,
+    setUserMoodRecord,
+    setIsAuthenticated,
+  } = useAuth();
 
   const phaseComponents: FC<PhaseProps>[] = [Phase1, Phase2, Phase3, Phase4];
 
@@ -56,6 +61,16 @@ const LogSlider = ({ phase, setPhase, setLogIsVisible }: LogSliderProps) => {
   };
 
   const sendForm = () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      localStorage.removeItem("token");
+      localStorage.removeItem("usuario_id");
+      localStorage.removeItem("nome");
+      localStorage.removeItem("email");
+      localStorage.removeItem("imagem_url");
+      setIsAuthenticated(false);
+      return;
+    }
     moodRegister();
   };
 

@@ -27,6 +27,8 @@ const Dashboard = () => {
     logedToday,
     setUserMoodRecord,
     fetchUserMoodRecords,
+    setOnboardingRequired,
+    setIsAuthenticated,
   } = useAuth();
   const [imagemCarregou, setImagemCarregou] = useState(false);
   const [fetchingRecords, setFetchingRecords] = useState(true);
@@ -71,6 +73,21 @@ const Dashboard = () => {
     const name = nameRef.current?.value;
     const file = fileRef.current?.files?.[0];
     const token = localStorage.getItem("token");
+
+    if (!token) {
+      localStorage.removeItem("token");
+      localStorage.removeItem("usuario_id");
+      localStorage.removeItem("nome");
+      localStorage.removeItem("email");
+      localStorage.removeItem("imagem_url");
+      setNome(null);
+      setEmail(null);
+      setImagem(null);
+      setOnboardingRequired(null);
+      setIsAuthenticated(false);
+
+      return;
+    }
 
     try {
       // 1. Envia apenas o nome para /onboarding

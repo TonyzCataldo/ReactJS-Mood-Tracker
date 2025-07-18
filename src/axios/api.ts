@@ -12,7 +12,9 @@ api.interceptors.response.use(
     if (error.response?.status === 401) {
       // Token inválido ou expirado
       localStorage.removeItem("token");
+      localStorage.removeItem("usuario_id");
       localStorage.removeItem("nome");
+      localStorage.removeItem("email");
       localStorage.removeItem("imagem_url");
       window.location.href = "/signin"; // redireciona pro login
     }

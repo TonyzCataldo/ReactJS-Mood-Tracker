@@ -87,8 +87,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     } catch (err) {
       console.error("Erro ao checar onboarding:", err);
       localStorage.removeItem("token");
+      localStorage.removeItem("usuario_id");
       localStorage.removeItem("nome");
+      localStorage.removeItem("email");
       localStorage.removeItem("imagem_url");
+      setNome(null);
+      setEmail(null);
+      setImagem(null);
+      setOnboardingRequired(null);
+      setIsAuthenticated(false);
       window.location.href = "/signin"; // redireciona pro login
     }
   };
@@ -116,6 +123,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     if (isAuthenticated) {
       fetchOnboardingStatus();
+      console.log("rodou o effect do context");
     }
   }, [isAuthenticated]);
 
