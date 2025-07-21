@@ -1,21 +1,39 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Header from "../components/Header";
 import { useAuth } from "../context/AuthContext";
 import DefaultContainer from "../components/DefaultContainer";
 import SettingsHeader from "../components/SettingsHeader";
 import ProfileForm from "../components/ProfileForm";
+import HelloContainer from "../components/HelloContainer";
+import Button from "../components/Button";
+import LogHeader from "../components/LogHeader";
+import LogSlider from "../components/LogSlider";
+import UserResultContainer from "../components/UserResultContainer";
 
 const Dashboard = () => {
-  const { nome, email, imagem, setNome, setEmail, setImagem } = useAuth();
+  const {
+    nome,
+    email,
+    imagem,
+    setNome,
+    setEmail,
+    setImagem,
+    setLogedToday,
+    logedToday,
+    setUserMoodRecord,
+    fetchUserMoodRecords,
+    userMoodRecord,
+  } = useAuth();
   const [imagemCarregou, setImagemCarregou] = useState(false);
-  const [settingsIsVisible, setSettingsIsVisible] = useState(false);
 
-  useEffect(() => {
-    if (!nome || !imagem || !email) {
-      fetchUserData();
-    }
-  }, []);
+  const [settingsIsVisible, setSettingsIsVisible] = useState(false);
+  const [logIsVisible, setLogIsVisible] = useState(false);
+
+  const [phase, setPhase] = useState(0);
+
+  const nameRef = useRef<HTMLInputElement>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
 
   const fetchUserData = async () => {
     const token = localStorage.getItem("token");
@@ -43,19 +61,153 @@ const Dashboard = () => {
     }
   };
 
-  if (!nome || !imagem) return null;
+  const handleFinish = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const name = nameRef.current?.value;
+    const file = fileRef.current?.files?.[0];
+    const token = localStorage.getItem("token");
+
+    try {
+      // 1. Envia apenas o nome para /onboarding
+      await axios.post(
+        "http://localhost:5000/onboarding",
+        { nome: name || "Jane Appleseed" },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      // 2. Se houver imagem, envia separadamente para /upload-image
+      if (file) {
+        const formData = new FormData();
+        formData.append("imagem", file);
+
+        await axios.post("http://localhost:5000/upload-image", formData, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+      }
+
+      fetchUserData();
+    } catch (error) {
+      console.error("Erro no onboarding:", error);
+    }
+  };
+
+  //o nome imagem e email é verificado pelo localstorage, então quando monta o componente verifica se tem essas informacoes, se não tiver, roda a funcão que vai puxar no back o nome img e email do usuario e seta automatico tanto no localstorage quanto nos estados.
+  useEffect(() => {
+    if (!nome || !imagem || !email) {
+      fetchUserData();
+    }
+  }, []);
+
+  //Verificar se o usuario logou o humor no dia ao montar o componente para garantir que o usuario logue uma vez somente.
+  useEffect(() => {
+    const verifyLogedToday = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const res = await axios.get("http://localhost:5000/ja-registrou-hoje", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        setLogedToday(res.data.ja_registrou);
+      } catch (error) {
+        console.error("Erro ao verificar registro do dia:", error);
+      }
+    };
+    verifyLogedToday();
+  }, []);
+
+  //verifica os registros do usuario ao montar o componente
+  useEffect(() => {
+    const getRecords = async () => {
+      const records = await fetchUserMoodRecords();
+      setUserMoodRecord(records);
+    };
+
+    getRecords();
+  }, []);
+
+  console.log(logedToday);
+
+  //espera definir aquilo que for necessario ao montar o componente para somente depois mostrar o dashboard ao user
+  if (!nome || !imagem || logedToday === null || userMoodRecord.length === 0)
+    return null;
 
   return (
-    <div className="pt-8 md:pt-10 pb-20  flex flex-col items-center">
+    <div className="pt-8 md:pt-10 pb-20 relative flex flex-col items-center">
+      <div
+        className="h-full min-h-dvh absolute bg-neutral-900/70 w-full top-0 z-20"
+        style={
+          settingsIsVisible || logIsVisible
+            ? { display: "block" }
+            : { display: "none" }
+        }
+      ></div>
       <Header
         imagemCarregou={imagemCarregou}
         setImagemCarregou={setImagemCarregou}
         setSettingsIsVisible={setSettingsIsVisible}
       />
-      <DefaultContainer py={"settings"} settingsIsVisible={settingsIsVisible}>
+
+      <DefaultContainer
+        py="settings"
+        isVisible={settingsIsVisible}
+        setIsVisible={setSettingsIsVisible}
+      >
         <SettingsHeader />
-        <ProfileForm />
+        <ProfileForm
+          buttonText="Save changes"
+          buttonPy="1rem"
+          nameRef={nameRef}
+          fileRef={fileRef}
+          handleFinish={handleFinish}
+        />
       </DefaultContainer>
+
+      <main className="w-[91.47%] md:w-[91.665%] max-w-[73.125rem] mt-12 md:mt-16 flex flex-col items-center">
+        <HelloContainer />
+        <form
+          className={`justify-center mt-12 lg:mt-16 ${
+            logedToday === false ? "flex" : "hidden"
+          }`}
+          onSubmit={(e) => {
+            e.preventDefault();
+            setLogIsVisible(true);
+          }}
+        >
+          <Button
+            buttonText="Log today's mood"
+            py="1rem"
+            fontSize="1.25rem"
+            lineHeight="140%"
+            letterSpacing="0px"
+          />
+        </form>
+        <DefaultContainer
+          py="default"
+          isVisible={logIsVisible}
+          setIsVisible={setLogIsVisible}
+          setPhase={setPhase}
+          backgroundGradient="linear-gradient(180deg, #F5F5FF 72.99%, #E0E0FF 100%)"
+        >
+          <LogHeader phase={phase} />
+          <LogSlider
+            phase={phase}
+            setPhase={setPhase}
+            setLogIsVisible={setLogIsVisible}
+          />
+        </DefaultContainer>
+        <UserResultContainer />
+        <p className="mt-[650px]">asdadsa</p>
+      </main>
     </div>
   );
 };

@@ -19,8 +19,10 @@ const Header = ({
   const { imagem } = useAuth();
 
   const botaoRef = useRef<HTMLButtonElement>(null);
-  const handleSvgClick = () => {
-    botaoRef.current?.click(); // aciona o clique do botão
+  const svgRef = useRef<HTMLDivElement>(null);
+
+  const toggleProfileVisible = () => {
+    setProfileIsVisible((prev) => !prev);
   };
 
   const [profileIsVisible, setProfileIsVisible] = useState(false);
@@ -29,17 +31,17 @@ const Header = ({
   const handleClickOutside = (event: MouseEvent) => {
     const target = event.target as Node;
 
-    const clicouForaDoProfile =
-      refProfileContainer.current &&
-      !refProfileContainer.current.contains(target);
+    const clicouFora =
+      (!refProfileContainer.current ||
+        !refProfileContainer.current.contains(target)) &&
+      (!botaoRef.current || !botaoRef.current.contains(target)) &&
+      (!svgRef.current || !svgRef.current.contains(target));
 
-    const clicouForaDoOutroElemento =
-      botaoRef.current && !botaoRef.current.contains(target);
-
-    if (clicouForaDoProfile && clicouForaDoOutroElemento) {
+    if (clicouFora) {
       setProfileIsVisible(false);
     }
   };
+
   useEffect(() => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
@@ -52,9 +54,9 @@ const Header = ({
       <img src={logo}></img>
 
       <button
-        onClick={() => setProfileIsVisible(!profileIsVisible)}
+        onClick={toggleProfileVisible}
         ref={botaoRef}
-        className="relative w-10 h-10 rounded-full overflow-hidden ml-auto z-10"
+        className="relative w-10 h-10 rounded-full overflow-hidden ml-auto z-10 cursor-pointer"
       >
         {!imagemCarregou && (
           <img
@@ -74,24 +76,29 @@ const Header = ({
           onError={() => setImagemCarregou(false)}
         />
       </button>
-      <svg
-        onClick={handleSvgClick}
-        xmlns="http://www.w3.org/2000/svg"
-        width="11"
-        height="6"
-        fill="none"
-        viewBox="0 0 11 6"
-        className="ml-2.5"
+      <div
+        ref={svgRef}
+        onClick={toggleProfileVisible}
+        className="pl-2.5 cursor-pointer"
       >
-        <path
-          fill="#21214D"
-          d="M5.727 5.86 1.102 1.265C.945 1.14.945.89 1.102.734l.625-.593a.36.36 0 0 1 .53 0l3.75 3.687L9.728.141c.156-.157.406-.157.53 0l.626.593c.156.157.156.407 0 .532L6.258 5.859a.36.36 0 0 1-.531 0Z"
-        />
-      </svg>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="11"
+          height="6"
+          fill="none"
+          viewBox="0 0 11 6"
+        >
+          <path
+            fill="#21214D"
+            d="M5.727 5.86 1.102 1.265C.945 1.14.945.89 1.102.734l.625-.593a.36.36 0 0 1 .53 0l3.75 3.687L9.728.141c.156-.157.406-.157.53 0l.626.593c.156.157.156.407 0 .532L6.258 5.859a.36.36 0 0 1-.531 0Z"
+          />
+        </svg>
+      </div>
       <ProfileContainer
         profileIsVisible={profileIsVisible}
         refProfileContainer={refProfileContainer}
         setSettingsIsVisible={setSettingsIsVisible}
+        setProfileIsVisible={setProfileIsVisible}
       />
     </header>
   );

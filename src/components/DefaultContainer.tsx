@@ -1,13 +1,57 @@
-const DefaultContainer = ({ children, py, settingsIsVisible }) => {
+import type { Dispatch, SetStateAction } from "react";
+import { useAuth } from "../context/AuthContext";
+
+type DefaultContainerProps = {
+  children: React.ReactNode;
+  py: string;
+  isVisible: boolean;
+  setIsVisible: Dispatch<SetStateAction<boolean>>;
+  setPhase?: Dispatch<SetStateAction<number>>;
+  backgroundGradient?: string;
+};
+
+const DefaultContainer = ({
+  children,
+  py,
+  isVisible,
+  setIsVisible,
+  setPhase,
+  backgroundGradient,
+}: DefaultContainerProps) => {
   const paddingYclassname =
     py === "settings" ? "py-10 md:py-12" : "py-8 md:py-12";
 
+  const { setLogData, setLogError } = useAuth();
+
   return (
     <div
-      className={`flex relative flex-col px-5 md:px-10 rounded-2xl mt-56 ${paddingYclassname}`}
+      style={{
+        ...(!isVisible ? { display: "none" } : { display: "flex" }),
+        ...(backgroundGradient
+          ? {
+              background:
+                "linear-gradient(180deg, #F5F5FF 72.99%, #E0E0FF 100%)",
+            }
+          : {}),
+      }}
+      className={`flex absolute flex-col px-5 md:px-10 rounded-2xl mt-[4.58rem] md:mt-20 bg-white w-[89.33%] max-w-[37.5rem] gap-6 md:gap-8 z-30 top-0 ${paddingYclassname}`}
     >
       <svg
-        className="absolute top-[17.5px] right-[16.5px] md:top-[30px] md:right-[30px]"
+        onClick={() => {
+          setIsVisible(false);
+
+          if (setPhase) {
+            setPhase(0);
+            setLogData({
+              humor: "",
+              horasSono: "",
+              descricao: "",
+              tags: [],
+            });
+            setLogError(false);
+          }
+        }}
+        className="absolute top-[17.5px] right-[16.5px] md:top-[30px] md:right-[30px] w-[10px] h-[10px] md:w-[15px] md:h-[15px] cursor-pointer"
         width="15"
         height="15"
         viewBox="0 0 15 15"

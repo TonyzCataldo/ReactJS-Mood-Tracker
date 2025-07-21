@@ -13,63 +13,45 @@ const OnBoarding = () => {
   const nameRef = useRef<HTMLInputElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
-  const uploadImageToCloudinary = async (file: File) => {
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("upload_preset", "mood_preset");
-
-    const response = await fetch(
-      "https://api.cloudinary.com/v1_1/di8rehik4/image/upload",
-      {
-        method: "POST",
-        body: formData,
-      }
-    );
-
-    const data = await response.json();
-
-    return {
-      url: data.secure_url,
-      public_id: data.public_id,
-    };
-  };
-
   //funcao que por hora seta no usuario o onboarding como false e direciona pra dashboard depois vai tambem enviar nome e img pro usuario
   const handleFinish = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const name = nameRef.current?.value;
     const file = fileRef.current?.files?.[0];
-
-    let imagemUrl = "/avatar-placeholder.svg"; // default
-    let imagemPublicId = "";
+    const token = localStorage.getItem("token");
 
     try {
+      // 1. Envia apenas o nome para /onboarding
+      await axios.post(
+        "http://localhost:5000/onboarding",
+        { nome: name || "Jane Appleseed" },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      // 2. Se houver imagem, envia separadamente para /upload-image
       if (file) {
-        const uploadResult = await uploadImageToCloudinary(file);
-        imagemUrl = uploadResult.url; // era uploadResult.secure_url
-        imagemPublicId = uploadResult.public_id;
+        const formData = new FormData();
+        formData.append("imagem", file);
+
+        await axios.post("http://localhost:5000/upload-image", formData, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
       }
 
-      const token = localStorage.getItem("token");
-
-      const formData = new FormData();
-      formData.append("nome", name || "Jane Appleseed");
-      formData.append("imagem_url", imagemUrl);
-      formData.append("imagem_public_id", imagemPublicId);
-
-      await axios.post("http://localhost:5000/onboarding", formData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
+      // 3. Atualiza contexto e navega
       fetchOnboardingStatus();
       setOnboardingRequired(false);
-
       navigate("/dashboard");
     } catch (error) {
-      console.error("Erro ao atualizar onboarding_required:", error);
+      console.error("Erro no onboarding:", error);
     }
   };
 
@@ -89,6 +71,8 @@ const OnBoarding = () => {
           handleFinish={handleFinish}
           nameRef={nameRef}
           fileRef={fileRef}
+          buttonText="Start Tracking"
+          buttonPy="0.75rem"
         />
       </main>
     </div>

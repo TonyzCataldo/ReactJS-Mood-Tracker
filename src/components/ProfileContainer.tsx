@@ -6,12 +6,14 @@ type ProfileContainer = {
   profileIsVisible: boolean;
   refProfileContainer: React.RefObject<HTMLDivElement | null>;
   setSettingsIsVisible: Dispatch<SetStateAction<boolean>>;
+  setProfileIsVisible: Dispatch<SetStateAction<boolean>>;
 };
 
 const ProfileContainer = ({
   profileIsVisible,
   refProfileContainer,
   setSettingsIsVisible,
+  setProfileIsVisible,
 }: ProfileContainer) => {
   const {
     nome,
@@ -58,8 +60,11 @@ const ProfileContainer = ({
         </p>
       </div>
       <button
-        className="flex items-center py-3 gap-2.5 font-RedditSans text-neutral-900 text-[0.938rem]/[140%] tracking-[-0.019rem]"
-        onClick={() => setSettingsIsVisible(true)}
+        className="flex items-center py-3 gap-2.5 font-RedditSans text-neutral-900 text-[0.938rem]/[140%] tracking-[-0.019rem] cursor-pointer"
+        onClick={() => {
+          setSettingsIsVisible(true);
+          setProfileIsVisible(false);
+        }}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -76,7 +81,7 @@ const ProfileContainer = ({
         Settings
       </button>
       <button
-        className="flex items-center gap-2.5 font-RedditSans text-neutral-900 text-[0.938rem]/[140%] tracking-[-0.019rem]"
+        className="flex items-center gap-2.5 font-RedditSans text-neutral-900 text-[0.938rem]/[140%] tracking-[-0.019rem] cursor-pointer"
         onClick={logout}
       >
         <svg

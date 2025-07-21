@@ -1,9 +1,12 @@
+import { useAuth } from "../context/AuthContext";
+
 type ButtonProps = {
   buttonText: string;
   py: string;
   fontSize: string;
   lineHeight: string;
   letterSpacing: string;
+  formSubmit?: boolean;
 };
 
 const Button = ({
@@ -12,11 +15,19 @@ const Button = ({
   fontSize,
   lineHeight,
   letterSpacing,
+  formSubmit,
 }: ButtonProps) => {
+  const { logData } = useAuth();
+
   return (
     <button
+      disabled={!!formSubmit && logData.horasSono === ""}
       type="submit"
-      className="bg-blue-600 text-white font-RedditSans px-8 font-semibold rounded-[10px] cursor-pointer"
+      className={`text-white font-RedditSans px-8 font-semibold rounded-[10px]  ${
+        !!formSubmit && logData.horasSono === ""
+          ? "bg-[#4865dbb3]"
+          : "bg-blue-600 cursor-pointer"
+      }`}
       style={{
         paddingTop: py,
         paddingBottom: py,

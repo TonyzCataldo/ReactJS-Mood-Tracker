@@ -20,5 +20,9 @@
   --color-neutral-600: #57577b;
   --color-neutral-300: #9393b7;
   --color-blue-600: #4865db;
+  --color-blue-200: #c7d3f7;
   --color-blue-100: #e0e6fa;
+  --color-red-700: #e60013;
+  --breakpoint-mtt: 490px;
+  --breakpoint-arrowalign: 429px;
 }

@@ -1,4 +1,4 @@
-import profileDefault from "../assets/avatar-placeholder.svg";
+import { useAuth } from "../context/AuthContext";
 
 import Button from "./Button";
 
@@ -6,12 +6,25 @@ type ProfileForm = {
   handleFinish: (e: React.FormEvent) => void;
   nameRef: React.RefObject<HTMLInputElement | null>;
   fileRef: React.RefObject<HTMLInputElement | null>;
+  buttonText: string;
+  buttonPy: string;
 };
 
-const ProfileForm = ({ handleFinish, nameRef, fileRef }: ProfileForm) => {
+const ProfileForm = ({
+  handleFinish,
+  nameRef,
+  fileRef,
+  buttonText,
+  buttonPy,
+}: ProfileForm) => {
   const openFile = () => {
     fileRef.current?.click();
   };
+
+  const { imagem, nome } = useAuth();
+  const profileDefault = "/avatar-placeholder.svg";
+  const imgInputBlockMBClass =
+    buttonText === "Save changes" ? "mb-0 md:mb-2" : "mb-2";
 
   return (
     <form onSubmit={handleFinish} className="flex flex-col gap-6">
@@ -28,11 +41,15 @@ const ProfileForm = ({ handleFinish, nameRef, fileRef }: ProfileForm) => {
           type="text"
           placeholder="Jane Appleseed"
           ref={nameRef}
+          defaultValue={nome || ""}
         ></input>
       </div>
-      <div className="flex gap-5 mb-2 ">
+      <div className={`flex gap-5 ${imgInputBlockMBClass}`}>
         <div>
-          <img src={profileDefault}></img>
+          <img
+            className="w-16 h-16 object-cover transition-opacity duration-300 rounded-full object-center"
+            src={imagem || profileDefault}
+          ></img>
         </div>
         <div className="flex flex-col gap-4">
           <div className="flex flex-col gap-1.5">
@@ -55,7 +72,7 @@ const ProfileForm = ({ handleFinish, nameRef, fileRef }: ProfileForm) => {
           </div>
           <button
             type="button"
-            className="font-RedditSans text-[1.125rem]/[120%] font-medium text-neutral-900 py-2 px-4 rounded-[8px] border-[1px] border-neutral-300 w-[5.688rem]"
+            className="font-RedditSans text-[1.125rem]/[120%] font-medium text-neutral-900 py-2 px-4 rounded-[8px] border-[1px] border-neutral-300 w-[5.688rem] cursor-pointer"
             onClick={openFile}
           >
             Upload
@@ -63,8 +80,8 @@ const ProfileForm = ({ handleFinish, nameRef, fileRef }: ProfileForm) => {
         </div>
       </div>
       <Button
-        buttonText="Start Tracking"
-        py="0.75rem"
+        buttonText={buttonText}
+        py={buttonPy}
         fontSize="1.25rem"
         lineHeight="140%"
         letterSpacing="0"

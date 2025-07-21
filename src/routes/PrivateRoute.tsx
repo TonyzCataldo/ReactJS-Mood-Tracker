@@ -1,14 +1,8 @@
 import { Navigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
+  const { isAuthenticated, onboardingRequired } = useAuth();
 
-const PrivateRoute = ({
-  children,
-  isAuthenticated,
-  onboardingRequired,
-}: {
-  children: React.ReactNode;
-  isAuthenticated: boolean;
-  onboardingRequired: boolean | null;
-}) => {
   if (!isAuthenticated) {
     return <Navigate to="/signin" />;
   }

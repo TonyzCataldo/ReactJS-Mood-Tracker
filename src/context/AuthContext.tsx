@@ -1,6 +1,21 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import api from "../axios/api";
 import type { ReactNode } from "react";
+import axios from "axios";
+
+type LogData = {
+  humor: string;
+  horasSono: string;
+  descricao: string;
+  tags: string[];
+};
+type MoodRegistroType = {
+  data: string;
+  humor: string;
+  como_se_sentiu: string;
+  descricao: string;
+  horas_sono: string;
+};
 
 type AuthContextType = {
   isAuthenticated: boolean;
@@ -14,6 +29,15 @@ type AuthContextType = {
   setNome: (nome: string | null) => void;
   setEmail: (email: string | null) => void;
   setImagem: (img: string | null) => void;
+  logData: LogData;
+  setLogData: React.Dispatch<React.SetStateAction<LogData>>;
+  logError: boolean;
+  setLogError: (logError: boolean) => void;
+  logedToday: boolean | null;
+  setLogedToday: React.Dispatch<React.SetStateAction<boolean | null>>;
+  userMoodRecord: MoodRegistroType[];
+  setUserMoodRecord: React.Dispatch<React.SetStateAction<MoodRegistroType[]>>;
+  fetchUserMoodRecords: () => Promise<MoodRegistroType[]>;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -37,6 +61,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     localStorage.getItem("imagem_url")
   );
 
+  const [logError, setLogError] = useState(false);
+
+  const [logedToday, setLogedToday] = useState<boolean | null>(null);
+
+  const [logData, setLogData] = useState<LogData>({
+    humor: "",
+    horasSono: "",
+    descricao: "",
+    tags: [],
+  });
+
+  const [userMoodRecord, setUserMoodRecord] = useState<MoodRegistroType[]>([]);
+
   const fetchOnboardingStatus = async () => {
     const token = localStorage.getItem("token");
     if (!token) return;
@@ -53,6 +90,23 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       localStorage.removeItem("nome");
       localStorage.removeItem("imagem_url");
       window.location.href = "/signin"; // redireciona pro login
+    }
+  };
+
+  const fetchUserMoodRecords = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await axios.get("http://localhost:5000/registros", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      console.log("Registros recebidos:", res.data);
+      return res.data; // isso é um array com os últimos 11 registros
+    } catch (err) {
+      console.error("Erro ao buscar registros:", err);
+      return [];
     }
   };
 
@@ -76,6 +130,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setNome,
         setEmail,
         setImagem,
+        logData,
+        setLogData,
+        logError,
+        setLogError,
+        logedToday,
+        setLogedToday,
+        userMoodRecord,
+        setUserMoodRecord,
+        fetchUserMoodRecords,
       }}
     >
       {children}

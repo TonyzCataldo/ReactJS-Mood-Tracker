@@ -13,10 +13,10 @@ function App() {
   //console.log(localStorage.getItem("token"));
   //console.log(isAuthenticated);
 
-  console.log(onboardingRequired);
-  console.log(localStorage.getItem("imagem_url"));
-  console.log(localStorage.getItem("nome"));
-  console.log(localStorage.getItem("token"));
+  //console.log(onboardingRequired);
+  //console.log(localStorage.getItem("imagem_url"));
+  //console.log(localStorage.getItem("nome"));
+  //console.log(localStorage.getItem("token"));
 
   if (isAuthenticated && onboardingRequired === null) {
     return null;
@@ -55,10 +55,7 @@ function App() {
           <Route
             path="/dashboard"
             element={
-              <PrivateRoute
-                isAuthenticated={isAuthenticated}
-                onboardingRequired={onboardingRequired}
-              >
+              <PrivateRoute>
                 <Dashboard />
               </PrivateRoute>
             }

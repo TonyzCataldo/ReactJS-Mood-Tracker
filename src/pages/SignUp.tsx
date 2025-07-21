@@ -4,6 +4,7 @@ import { formReducer, initialState } from "../reducers/authFormReducer";
 import { useReducer } from "react";
 import { useAuth } from "../context/AuthContext";
 import axios from "axios";
+import { AxiosError } from "axios";
 
 const SignUp = () => {
   const [state, dispatch] = useReducer(formReducer, initialState);
@@ -39,10 +40,12 @@ const SignUp = () => {
       dispatch({ type: "RESET_FORM" });
       setIsAuthenticated(true);
       setOnboardingRequired(true);
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const error = err as AxiosError<{ msg: string }>;
+
       dispatch({
         type: "SET_ERRO",
-        payload: err.response?.data?.msg || "Erro ao registrar",
+        payload: error.response?.data?.msg || "Erro ao registrar",
       });
     }
   };
