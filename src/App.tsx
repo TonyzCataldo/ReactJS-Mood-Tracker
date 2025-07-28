@@ -22,10 +22,6 @@ function App() {
   );
   const resetAuth = useAuthStore((state) => state.resetAuth);
 
-  console.log("app render");
-  console.log(onboardingRequired);
-  console.log(isHydrated);
-
   useEffect(() => {
     if (!isHydrated) return;
     if (isAuthenticated) {
