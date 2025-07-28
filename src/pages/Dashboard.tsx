@@ -1,7 +1,6 @@
 import axios from "axios";
 import { useEffect, useState, useRef } from "react";
 import Header from "../components/Header";
-//import { useAuth } from "../context/AuthContext";
 import DefaultContainer from "../components/DefaultContainer";
 import SettingsHeader from "../components/SettingsHeader";
 import ProfileForm from "../components/ProfileForm";
@@ -20,21 +19,6 @@ import { useUserDataStore } from "../store/useUserDataStore";
 import api from "../axios/api";
 
 const Dashboard = () => {
-  // const {
-  // nome,
-  // email,
-  //  imagem,
-  // setNome,
-  // setEmail,
-  // setImagem,
-  //  setLogedToday,
-  //  logedToday,
-  //  setUserMoodRecord,
-  //  fetchUserMoodRecords,
-  //   setOnboardingRequired,
-  // setIsAuthenticated,
-  // } = useAuth();
-
   //imports do AuthStore
   const token = useAuthStore((state) => state.token);
   const nome = useAuthStore((state) => state.nome);
@@ -66,11 +50,7 @@ const Dashboard = () => {
   const setLogIsVisible = useVisibleStore((state) => state.setLogIsVisible);
   //
 
-  console.log("DASHBOARD RENDER");
   const [fetchingRecords, setFetchingRecords] = useState(true);
-
-  //const [settingsIsVisible, setSettingsIsVisible] = useState(false);
-  //const [logIsVisible, setLogIsVisible] = useState(false);
 
   const [phase, setPhase] = useState(0);
 
@@ -80,7 +60,6 @@ const Dashboard = () => {
   //
 
   const fetchUserData = async () => {
-    //const token = localStorage.getItem("token");
     if (!token) return;
 
     try {
@@ -92,12 +71,7 @@ const Dashboard = () => {
 
       const { nome, imagem_url, email } = res.data;
 
-      // salva no localStorage
-      //localStorage.setItem("nome", nome);
-      //localStorage.setItem("imagem_url", imagem_url);
-      //localStorage.setItem("email", email);
-
-      setNome(nome); // ⬅️ atualiza a tela
+      setNome(nome);
       setImagem(imagem_url);
       setEmail(email);
     } catch (err) {
@@ -111,19 +85,8 @@ const Dashboard = () => {
 
     const name = nameRef.current?.value;
     const file = fileRef.current?.files?.[0];
-    //const token = localStorage.getItem("token");
 
     if (!token) {
-      //localStorage.removeItem("token");
-      //localStorage.removeItem("usuario_id");
-      //localStorage.removeItem("nome");
-      //localStorage.removeItem("email");
-      //localStorage.removeItem("imagem_url");
-      //setNome(null);
-      //setEmail(null);
-      //setImagem(null);
-      //setOnboardingRequired(null);
-      //setIsAuthenticated(false);
       resetAuth();
       return;
     }
@@ -190,18 +153,10 @@ const Dashboard = () => {
       }
     };
     verifyLogedToday();
-    //console.log(logedToday);
   }, []);
 
   //verifica os registros do usuario ao montar o componente
   useEffect(() => {
-    //const getRecords = async () => {
-    //const records = await fetchUserMoodRecords();
-    //setUserMoodRecord(records);
-    //  setFetchingRecords(false);
-    //};
-
-    //getRecords();
     const fetchUserMoodRecords = async () => {
       try {
         const res = await axios.get(
@@ -225,8 +180,6 @@ const Dashboard = () => {
     };
     getRecords();
   }, []);
-
-  console.log(logedToday);
 
   //espera definir aquilo que for necessario ao montar o componente para somente depois mostrar o dashboard ao user
   if (!nome || !imagem || logedToday === null || fetchingRecords === true)

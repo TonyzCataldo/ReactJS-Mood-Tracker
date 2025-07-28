@@ -24,7 +24,6 @@ const DefaultContainer = ({
   const setLogData = useUserDataStore((state) => state.setLogData);
   const setLogError = useUserDataStore((state) => state.setLogError);
 
-  console.log("DEFAULTCONTAINER RENDER");
   return (
     <div
       style={{

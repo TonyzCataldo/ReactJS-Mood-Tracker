@@ -3,8 +3,6 @@ import { useAuthStore } from "../store/useAuthStore";
 const HelloContainer = () => {
   const nome = useAuthStore((state) => state.nome);
 
-  console.log("HelloContainerRender");
-
   const firstNome = nome?.split(" ")[0] || "";
   function capitalizeFirstLetter(str: string) {
     return str.charAt(0).toUpperCase() + str.slice(1);

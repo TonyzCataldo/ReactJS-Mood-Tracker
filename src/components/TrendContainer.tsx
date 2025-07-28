@@ -3,7 +3,6 @@ import { useUserDataStore } from "../store/useUserDataStore";
 import VisualMoodBar from "./VisualMoodBar";
 
 const TrendContainer = () => {
-  //const { userMoodRecord } = useAuth();
   const userMoodRecord = useUserDataStore((state) => state.userMoodRecord);
 
   const recordDates = userMoodRecord.map((day) => day.data);
@@ -51,11 +50,6 @@ const TrendContainer = () => {
   const reverseAllDates = [...paddedDates].reverse();
 
   const inverseRecords = [...userMoodRecord].reverse();
-
-  //console.log(formattedDates);
-  //console.log(missingDates);
-  //console.log(allDates);
-  console.log(inverseRecords);
 
   return (
     <section className="px-4 py-5 md:px-5 md:py-8 rounded-2xl bg-white w-full flex flex-col border border-blue-100 gap-8 min-[780px]:w-[52%] min-[896px]:w-[57%] lg:w-[62%] min-[73.125rem]:w-full">
