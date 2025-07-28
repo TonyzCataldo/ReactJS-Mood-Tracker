@@ -1,8 +1,11 @@
-import { useAuth } from "../context/AuthContext";
+//import { useAuth } from "../context/AuthContext";
+import { useUserDataStore } from "../store/useUserDataStore";
 import VisualMoodBar from "./VisualMoodBar";
 
 const TrendContainer = () => {
-  const { userMoodRecord } = useAuth();
+  //const { userMoodRecord } = useAuth();
+  const userMoodRecord = useUserDataStore((state) => state.userMoodRecord);
+
   const recordDates = userMoodRecord.map((day) => day.data);
   const numberOfDates = 11;
   const missingNumberDates = numberOfDates - recordDates.length;

@@ -1,7 +1,9 @@
-import { useAuth } from "../context/AuthContext";
-
+//import { useAuth } from "../context/AuthContext";
+import { useAuthStore } from "../store/useAuthStore";
 const HelloContainer = () => {
-  const { nome } = useAuth();
+  const nome = useAuthStore((state) => state.nome);
+
+  console.log("HelloContainerRender");
 
   const firstNome = nome?.split(" ")[0] || "";
   function capitalizeFirstLetter(str: string) {

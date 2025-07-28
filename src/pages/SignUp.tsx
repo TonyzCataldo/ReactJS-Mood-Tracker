@@ -2,14 +2,18 @@ import logo from "../assets/logo.svg";
 import SignMain from "../components/SignMain";
 import { formReducer, initialState } from "../reducers/authFormReducer";
 import { useReducer, useEffect } from "react";
-import { useAuth } from "../context/AuthContext";
 import axios from "axios";
 import { AxiosError } from "axios";
+import { useAuthStore } from "../store/useAuthStore";
 
 const SignUp = () => {
   const [state, dispatch] = useReducer(formReducer, initialState);
 
-  const { setIsAuthenticated, setOnboardingRequired } = useAuth();
+  const setIsAuthenticated = useAuthStore((state) => state.setIsAuthenticated);
+  const setOnboardingRequired = useAuthStore(
+    (state) => state.setOnboardingRequired
+  );
+  const setToken = useAuthStore((state) => state.setToken);
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,9 +41,7 @@ const SignUp = () => {
         }
       );
 
-      localStorage.setItem("token", loginResponse.data.token);
-      localStorage.setItem("usuario_id", loginResponse.data.usuario_id);
-
+      setToken(loginResponse.data.token);
       dispatch({ type: "RESET_FORM" });
       setIsAuthenticated(true);
       setOnboardingRequired(true);
@@ -54,11 +56,7 @@ const SignUp = () => {
   };
 
   useEffect(() => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("usuario_id");
-    localStorage.removeItem("nome");
-    localStorage.removeItem("email");
-    localStorage.removeItem("imagem_url");
+    useAuthStore.getState().resetAuth();
   }, []);
 
   return (

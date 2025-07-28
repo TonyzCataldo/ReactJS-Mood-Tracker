@@ -1,23 +1,13 @@
 import logo from "../assets/logo.svg";
-import type { Dispatch, SetStateAction } from "react";
 import { useRef, useState, useEffect } from "react";
 
-import { useAuth } from "../context/AuthContext";
 import ProfileContainer from "./ProfileContainer";
+import { useAuthStore } from "../store/useAuthStore";
 
-type HeaderProps = {
-  imagemCarregou: boolean;
-  setImagemCarregou: Dispatch<SetStateAction<boolean>>;
-  setSettingsIsVisible: Dispatch<SetStateAction<boolean>>;
-};
+const Header = () => {
+  const imagem = useAuthStore((state) => state.imagem);
 
-const Header = ({
-  imagemCarregou,
-  setImagemCarregou,
-  setSettingsIsVisible,
-}: HeaderProps) => {
-  const { imagem } = useAuth();
-
+  const [imagemCarregou, setImagemCarregou] = useState(false);
   const botaoRef = useRef<HTMLButtonElement>(null);
   const svgRef = useRef<HTMLDivElement>(null);
 
@@ -97,7 +87,6 @@ const Header = ({
       <ProfileContainer
         profileIsVisible={profileIsVisible}
         refProfileContainer={refProfileContainer}
-        setSettingsIsVisible={setSettingsIsVisible}
         setProfileIsVisible={setProfileIsVisible}
       />
     </header>

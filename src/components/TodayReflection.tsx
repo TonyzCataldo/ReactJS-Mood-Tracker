@@ -1,8 +1,8 @@
 import star from "../assets/icon-reflection.svg";
-import { useAuth } from "../context/AuthContext";
+import { useUserDataStore } from "../store/useUserDataStore";
 
 const TodayReflection = () => {
-  const { userMoodRecord } = useAuth();
+  const userMoodRecord = useUserDataStore((state) => state.userMoodRecord);
 
   const reflection =
     userMoodRecord.length < 1

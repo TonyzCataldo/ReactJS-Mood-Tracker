@@ -1,12 +1,12 @@
 import type { Dispatch, SetStateAction } from "react";
-import { useAuth } from "../../context/AuthContext";
 import Button from "../Button";
+import { useUserDataStore } from "../../store/useUserDataStore";
 
 type PhaseProps = {
   next: () => void;
   phase: number;
   setPhase?: Dispatch<SetStateAction<number>>;
-  setLogIsVisible?: Dispatch<SetStateAction<boolean>>;
+  setLogIsVisible?: (value: boolean) => void;
 };
 
 const Phase4 = ({ next, phase, setPhase, setLogIsVisible }: PhaseProps) => {
@@ -18,7 +18,9 @@ const Phase4 = ({ next, phase, setPhase, setLogIsVisible }: PhaseProps) => {
     "9+ hours",
   ];
 
-  const { logData, setLogData, logedToday } = useAuth();
+  const logData = useUserDataStore((state) => state.logData);
+  const logedToday = useUserDataStore((state) => state.logedToday);
+  const setLogData = useUserDataStore((state) => state.setLogData);
 
   const phase4Function = (e: React.FormEvent) => {
     e.preventDefault();
@@ -92,9 +94,7 @@ const Phase4 = ({ next, phase, setPhase, setLogIsVisible }: PhaseProps) => {
         {sleepOptions.map((option) => (
           <div
             key={option}
-            onClick={() =>
-              setLogData((prev) => ({ ...prev, horasSono: option }))
-            }
+            onClick={() => setLogData({ ...logData, horasSono: option })}
             className="bg-white px-5 py-3.5 rounded-[0.625rem] flex items-center border-2 border-transparent cursor-pointer hover:bg-transparent"
             style={
               logData.horasSono === option
@@ -104,7 +104,7 @@ const Phase4 = ({ next, phase, setPhase, setLogIsVisible }: PhaseProps) => {
             tabIndex={0}
             onKeyDown={(e) => {
               if (e.key === "Enter") {
-                setLogData((prev) => ({ ...prev, horasSono: option }));
+                setLogData({ ...logData, horasSono: option });
               }
             }}
           >

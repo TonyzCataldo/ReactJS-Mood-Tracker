@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import api from "../axios/api";
+import api from "../../src/axios/api";
 import type { ReactNode } from "react";
 import axios from "axios";
 
@@ -18,17 +18,17 @@ type MoodRegistroType = {
 };
 
 type AuthContextType = {
-  isAuthenticated: boolean;
-  onboardingRequired: boolean | null;
-  nome: string | null;
-  email: string | null;
-  imagem: string | null;
-  setIsAuthenticated: (auth: boolean) => void;
-  setOnboardingRequired: (value: boolean | null) => void;
-  fetchOnboardingStatus: () => void;
-  setNome: (nome: string | null) => void;
-  setEmail: (email: string | null) => void;
-  setImagem: (img: string | null) => void;
+  isAuthenticated: boolean; //
+  onboardingRequired: boolean | null; //
+  nome: string | null; //
+  email: string | null; //
+  imagem: string | null; //
+  setIsAuthenticated: (auth: boolean) => void; //
+  setOnboardingRequired: (value: boolean | null) => void; //
+  fetchOnboardingStatus: () => void; //deleted
+  setNome: (nome: string | null) => void; //
+  setEmail: (email: string | null) => void; //
+  setImagem: (img: string | null) => void; //
   logData: LogData;
   setLogData: React.Dispatch<React.SetStateAction<LogData>>;
   logError: boolean;
@@ -127,6 +127,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [isAuthenticated]);
 
+  console.log("console solto no auth");
   return (
     <AuthContext.Provider
       value={{

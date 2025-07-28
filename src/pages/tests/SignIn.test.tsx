@@ -3,7 +3,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event"; // para simular interação
 import SignIn from "../SignIn";
 import { MemoryRouter } from "react-router-dom";
-import { AuthProvider } from "../../context/AuthContext";
+import { AuthProvider } from "../../../trash/context/AuthContext";
 
 describe("SignIn component", () => {
   test("should render SignIn component ", () => {

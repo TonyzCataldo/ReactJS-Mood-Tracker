@@ -1,11 +1,11 @@
-import { useAuth } from "../../context/AuthContext";
+import { useUserDataStore } from "../../store/useUserDataStore";
 
 type FeelTagsType = {
   tag: string;
 };
 
 const FeelTags = ({ tag }: FeelTagsType) => {
-  const { logData } = useAuth();
+  const logData = useUserDataStore((state) => state.logData);
 
   return (
     <div

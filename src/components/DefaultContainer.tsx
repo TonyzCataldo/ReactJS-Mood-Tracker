@@ -1,11 +1,11 @@
 import type { Dispatch, SetStateAction } from "react";
-import { useAuth } from "../context/AuthContext";
+import { useUserDataStore } from "../store/useUserDataStore";
 
 type DefaultContainerProps = {
   children: React.ReactNode;
   py: string;
   isVisible: boolean;
-  setIsVisible: Dispatch<SetStateAction<boolean>>;
+  setIsVisible: (value: boolean) => void;
   setPhase?: Dispatch<SetStateAction<number>>;
   backgroundGradient?: string;
 };
@@ -21,8 +21,10 @@ const DefaultContainer = ({
   const paddingYclassname =
     py === "settings" ? "py-10 md:py-12" : "py-8 md:py-12";
 
-  const { setLogData, setLogError } = useAuth();
+  const setLogData = useUserDataStore((state) => state.setLogData);
+  const setLogError = useUserDataStore((state) => state.setLogError);
 
+  console.log("DEFAULTCONTAINER RENDER");
   return (
     <div
       style={{

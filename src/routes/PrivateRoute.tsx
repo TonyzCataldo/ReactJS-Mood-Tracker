@@ -1,14 +1,14 @@
 import { Navigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { useAuthStore } from "../store/useAuthStore";
+
 const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
-  const { isAuthenticated, onboardingRequired } = useAuth();
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const onboardingRequired = useAuthStore((state) => state.onboardingRequired);
 
   if (!isAuthenticated) {
     return <Navigate to="/signin" />;
   }
-  if (onboardingRequired === null) {
-    return null; // aguardando info da API
-  }
+
   if (onboardingRequired === true) {
     return <Navigate to="/onboarding" replace />;
   }

@@ -3,12 +3,16 @@ import logo from "../assets/logo.svg";
 import axios from "axios";
 import ProfileForm from "../components/ProfileForm";
 import { useRef } from "react";
-import { useAuth } from "../context/AuthContext";
+
+import { useAuthStore } from "../store/useAuthStore";
 
 const OnBoarding = () => {
   const navigate = useNavigate();
 
-  const { fetchOnboardingStatus, setOnboardingRequired } = useAuth();
+  const setOnboardingRequired = useAuthStore(
+    (state) => state.setOnboardingRequired
+  );
+  const token = useAuthStore((state) => state.token);
 
   const nameRef = useRef<HTMLInputElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -19,7 +23,6 @@ const OnBoarding = () => {
 
     const name = nameRef.current?.value;
     const file = fileRef.current?.files?.[0];
-    const token = localStorage.getItem("token");
 
     try {
       // 1. Envia apenas o nome para /onboarding
@@ -51,7 +54,7 @@ const OnBoarding = () => {
       }
 
       // 3. Atualiza contexto e navega
-      fetchOnboardingStatus();
+
       setOnboardingRequired(false);
       navigate("/dashboard");
     } catch (error) {

@@ -1,39 +1,49 @@
 import { type Dispatch, type SetStateAction, type FC } from "react";
-import { useAuth } from "../context/AuthContext";
-import axios from "axios";
 import Phase1 from "./logform/Phase1";
 import Phase2 from "./logform/Phase2";
 import Phase3 from "./logform/Phase3";
 import Phase4 from "./logform/Phase4";
+import { useAuthStore } from "../store/useAuthStore";
+import { useUserDataStore } from "../store/useUserDataStore";
+import { useVisibleStore } from "../store/useVisibleStore";
+import api from "../axios/api";
 
 type LogSliderProps = {
   phase: number;
   setPhase: Dispatch<SetStateAction<number>>;
-  setLogIsVisible: Dispatch<SetStateAction<boolean>>;
 };
 
 type PhaseProps = {
   next: () => void;
   phase: number;
   setPhase?: Dispatch<SetStateAction<number>>;
-  setLogIsVisible?: Dispatch<SetStateAction<boolean>>;
 };
 
-const LogSlider = ({ phase, setPhase, setLogIsVisible }: LogSliderProps) => {
-  const {
-    logData,
-    setLogedToday,
-    fetchUserMoodRecords,
-    setUserMoodRecord,
-    setIsAuthenticated,
-  } = useAuth();
+const LogSlider = ({ phase, setPhase }: LogSliderProps) => {
+  //imports do useAuthStore
+  const token = useAuthStore((state) => state.token);
+  const resetAuth = useAuthStore((state) => state.resetAuth);
+
+  //
+
+  //imports do useUserDataStore
+  const logData = useUserDataStore((state) => state.logData);
+  const setLogedToday = useUserDataStore((state) => state.setLogedToday);
+  const setUserMoodRecord = useUserDataStore(
+    (state) => state.setUserMoodRecord
+  );
+  const setLogData = useUserDataStore((state) => state.setLogData);
+
+  //
+
+  //imports do useVisibleStore
+  const setLogIsVisible = useVisibleStore((state) => state.setLogIsVisible);
 
   const phaseComponents: FC<PhaseProps>[] = [Phase1, Phase2, Phase3, Phase4];
 
   const moodRegister = async () => {
     try {
-      const token = localStorage.getItem("token");
-      const res = await axios.post(
+      await api.post(
         "https://mood-api-k2mz.onrender.com/registro",
         {
           humor: logData.humor,
@@ -49,9 +59,27 @@ const LogSlider = ({ phase, setPhase, setLogIsVisible }: LogSliderProps) => {
       );
       setLogedToday(true);
 
-      console.log("Registro salvo com sucesso:", res.data);
+      const fetchUserMoodRecords = async () => {
+        try {
+          const res = await api.get(
+            "https://mood-api-k2mz.onrender.com/registros",
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+
+          return res.data; // isso é um array com os últimos 11 registros
+        } catch (err) {
+          console.error("Erro ao buscar registros:", err);
+          return [];
+        }
+      };
+
       const records = await fetchUserMoodRecords();
       setUserMoodRecord(records);
+      setLogData({ humor: "", descricao: "", horasSono: "", tags: [] });
     } catch (error: any) {
       console.log(
         "Erro ao registrar:",
@@ -61,14 +89,8 @@ const LogSlider = ({ phase, setPhase, setLogIsVisible }: LogSliderProps) => {
   };
 
   const sendForm = () => {
-    const token = localStorage.getItem("token");
     if (!token) {
-      localStorage.removeItem("token");
-      localStorage.removeItem("usuario_id");
-      localStorage.removeItem("nome");
-      localStorage.removeItem("email");
-      localStorage.removeItem("imagem_url");
-      setIsAuthenticated(false);
+      resetAuth();
       return;
     }
     moodRegister();
@@ -77,7 +99,7 @@ const LogSlider = ({ phase, setPhase, setLogIsVisible }: LogSliderProps) => {
   const next = () => {
     setPhase((current) => {
       if (current === phaseComponents.length - 1) {
-        sendForm(); // por exemplo, salvar na API
+        sendForm();
         return current;
       }
 

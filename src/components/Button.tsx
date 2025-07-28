@@ -1,4 +1,4 @@
-import { useAuth } from "../context/AuthContext";
+import { useUserDataStore } from "../store/useUserDataStore";
 
 type ButtonProps = {
   buttonText: string;
@@ -17,7 +17,7 @@ const Button = ({
   letterSpacing,
   formSubmit,
 }: ButtonProps) => {
-  const { logData } = useAuth();
+  const logData = useUserDataStore((state) => state.logData);
 
   return (
     <button

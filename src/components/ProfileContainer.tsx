@@ -1,46 +1,27 @@
-import { useAuth } from "../context/AuthContext";
-import { useNavigate } from "react-router-dom";
 import type { Dispatch, SetStateAction } from "react";
+import { useVisibleStore } from "../store/useVisibleStore";
+import { useAuthStore } from "../store/useAuthStore";
 
 type ProfileContainer = {
   profileIsVisible: boolean;
   refProfileContainer: React.RefObject<HTMLDivElement | null>;
-  setSettingsIsVisible: Dispatch<SetStateAction<boolean>>;
   setProfileIsVisible: Dispatch<SetStateAction<boolean>>;
 };
 
 const ProfileContainer = ({
   profileIsVisible,
   refProfileContainer,
-  setSettingsIsVisible,
   setProfileIsVisible,
 }: ProfileContainer) => {
-  const {
-    nome,
-    email,
-    setNome,
-    setEmail,
-    setImagem,
-    setOnboardingRequired,
-    setIsAuthenticated,
-  } = useAuth();
+  // estados do AuthStore
+  const resetAuth = useAuthStore((state) => state.resetAuth);
+  const nome = useAuthStore((state) => state.nome);
+  const email = useAuthStore((state) => state.email);
 
-  const navigate = useNavigate();
-
-  const logout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("usuario_id");
-    localStorage.removeItem("nome");
-    localStorage.removeItem("email");
-    localStorage.removeItem("imagem_url");
-    setNome(null);
-    setEmail(null);
-    setImagem(null);
-    setOnboardingRequired(null);
-    setIsAuthenticated(false);
-
-    navigate("/signin");
-  };
+  // estados do VisibleStore
+  const setSettingsIsVisible = useVisibleStore(
+    (state) => state.setSettingsIsVisible
+  );
 
   return (
     <div
@@ -82,7 +63,7 @@ const ProfileContainer = ({
       </button>
       <button
         className="flex items-center gap-2.5 font-RedditSans text-neutral-900 text-[0.938rem]/[140%] tracking-[-0.019rem] cursor-pointer"
-        onClick={logout}
+        onClick={() => resetAuth()}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"

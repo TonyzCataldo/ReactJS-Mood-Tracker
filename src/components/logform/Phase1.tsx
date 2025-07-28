@@ -1,4 +1,3 @@
-import { useAuth } from "../../context/AuthContext";
 import Happy from "../../assets/icon-happy-color.svg";
 import Veryhappy from "../../assets/icon-very-happy-color.svg";
 import Neutral from "../../assets/icon-neutral-color.svg";
@@ -6,16 +5,23 @@ import type { Dispatch, SetStateAction } from "react";
 import Sad from "../../assets/icon-sad-color.svg";
 import Verysad from "../../assets/icon-very-sad-color.svg";
 import Button from "../Button";
+import { useUserDataStore } from "../../store/useUserDataStore";
 
 type PhaseProps = {
   next: () => void;
   phase: number;
   setPhase?: Dispatch<SetStateAction<number>>;
-  setLogIsVisible?: Dispatch<SetStateAction<boolean>>;
+  setLogIsVisible?: (value: boolean) => void;
 };
 
 const Phase1 = ({ next, phase }: PhaseProps) => {
-  const { setLogData, logData, logError, setLogError } = useAuth();
+  const logData = useUserDataStore((state) => state.logData);
+  const logError = useUserDataStore((state) => state.logError);
+  const setLogData = useUserDataStore((state) => state.setLogData);
+  const setLogError = useUserDataStore((state) => state.setLogError);
+
+  //
+
   const humorOptions = ["Very Happy", "Happy", "Neutral", "Sad", "Very Sad"];
 
   const humorIcons: Record<string, string> = {
@@ -48,7 +54,7 @@ const Phase1 = ({ next, phase }: PhaseProps) => {
         {humorOptions.map((option) => (
           <div
             key={option}
-            onClick={() => setLogData((prev) => ({ ...prev, humor: option }))}
+            onClick={() => setLogData({ ...logData, humor: option })}
             className="bg-white px-5 py-[10px] rounded-[0.625rem] flex items-center border-2 border-transparent cursor-pointer hover:bg-transparent"
             style={
               logData.humor === option
@@ -58,7 +64,7 @@ const Phase1 = ({ next, phase }: PhaseProps) => {
             tabIndex={0}
             onKeyDown={(e) => {
               if (e.key === "Enter") {
-                setLogData((prev) => ({ ...prev, humor: option }));
+                setLogData({ ...logData, humor: option });
               }
             }}
           >

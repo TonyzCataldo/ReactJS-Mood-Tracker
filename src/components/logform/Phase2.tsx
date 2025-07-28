@@ -1,13 +1,14 @@
 import FeelTags from "./FeelTags";
 import type { Dispatch, SetStateAction } from "react";
-import { useAuth } from "../../context/AuthContext";
+//import { useAuth } from "../../context/AuthContext";
 import Button from "../Button";
+import { useUserDataStore } from "../../store/useUserDataStore";
 
 type PhaseProps = {
   next: () => void;
   phase: number;
   setPhase?: Dispatch<SetStateAction<number>>;
-  setLogIsVisible?: Dispatch<SetStateAction<boolean>>;
+  setLogIsVisible?: (value: boolean) => void;
 };
 
 const Phase2 = ({ next, phase }: PhaseProps) => {
@@ -34,7 +35,11 @@ const Phase2 = ({ next, phase }: PhaseProps) => {
     "Restless",
   ];
 
-  const { logData, setLogData, logError, setLogError } = useAuth();
+  //const { logData, setLogData, logError, setLogError } = useAuth();
+  const logData = useUserDataStore((state) => state.logData);
+  const logError = useUserDataStore((state) => state.logError);
+  const setLogData = useUserDataStore((state) => state.setLogData);
+  const setLogError = useUserDataStore((state) => state.setLogError);
 
   const phase2Function = (e: React.FormEvent) => {
     e.preventDefault();
@@ -60,56 +65,37 @@ const Phase2 = ({ next, phase }: PhaseProps) => {
         </p>
       </div>
       <div className="flex flex-wrap gap-x-4 gap-y-3">
-        {tagOptions.map((tag) => (
-          <div
-            key={tag}
-            onClick={() =>
-              setLogData((prev) => {
-                const tagMarked = prev.tags.includes(tag);
-                const tagslimit = 3;
+        {tagOptions.map((tag) => {
+          const handleClick = () => {
+            const tagMarked = logData.tags.includes(tag);
+            const tagsLimit = 3;
 
-                if (tagMarked) {
-                  return {
-                    ...prev,
-                    tags: prev.tags.filter((t) => t !== tag),
-                  };
-                } else if (prev.tags.length < tagslimit) {
-                  return {
-                    ...prev,
-                    tags: [...prev.tags, tag],
-                  };
-                } else {
-                  return prev;
-                }
-              })
+            if (tagMarked) {
+              setLogData({
+                tags: logData.tags.filter((t) => t !== tag),
+              });
+            } else if (logData.tags.length < tagsLimit) {
+              setLogData({
+                tags: [...logData.tags, tag],
+              });
             }
-            tabIndex={0}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                setLogData((prev) => {
-                  const tagMarked = prev.tags.includes(tag);
-                  const tagslimit = 3;
-
-                  if (tagMarked) {
-                    return {
-                      ...prev,
-                      tags: prev.tags.filter((t) => t !== tag),
-                    };
-                  } else if (prev.tags.length < tagslimit) {
-                    return {
-                      ...prev,
-                      tags: [...prev.tags, tag],
-                    };
-                  } else {
-                    return prev;
-                  }
-                });
-              }
-            }}
-          >
-            <FeelTags tag={tag} />
-          </div>
-        ))}
+            // se estiver no limite, não faz nada
+          };
+          return (
+            <div
+              key={tag}
+              onClick={handleClick}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  handleClick();
+                }
+              }}
+              tabIndex={0}
+            >
+              <FeelTags tag={tag} />
+            </div>
+          );
+        })}
       </div>
       <form onSubmit={phase2Function} className="flex flex-col">
         <div

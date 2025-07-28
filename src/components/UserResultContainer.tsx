@@ -1,4 +1,4 @@
-import { useAuth } from "../context/AuthContext";
+//import { useAuth } from "../context/AuthContext";
 import ResultCard from "./ResultCard";
 import veryHappyWhiteEmoji from "../assets/icon-very-happy-white.svg";
 import neutralWhiteEmoji from "../assets/icon-neutral-white.svg";
@@ -12,6 +12,7 @@ import risingSvgWhite from "../assets/icon-trend-increase-white.svg";
 import sameSvgWhite from "../assets/icon-trend-same-white.svg";
 import fallingSvgWhite from "../assets/icon-trend-decrease-white.svg";
 import zzzSvg from "../assets/icon-sleep-white.svg";
+import { useUserDataStore } from "../store/useUserDataStore";
 
 type averageMoodType = {
   text: string;
@@ -30,7 +31,8 @@ type CompleteResult = {
 };
 
 const UserResultContainer = () => {
-  const { userMoodRecord } = useAuth();
+  //const { userMoodRecord } = useAuth();
+  const userMoodRecord = useUserDataStore((state) => state.userMoodRecord);
 
   const result: CompleteResult = ((records) => {
     const scale = ["Very Sad", "Sad", "Neutral", "Happy", "Very Happy"];

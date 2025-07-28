@@ -1,4 +1,5 @@
-import { useAuth } from "../context/AuthContext";
+//import { useAuth } from "../context/AuthContext";
+import { useAuthStore } from "../store/useAuthStore";
 
 import Button from "./Button";
 
@@ -17,11 +18,16 @@ const ProfileForm = ({
   buttonText,
   buttonPy,
 }: ProfileForm) => {
+  //
   const openFile = () => {
     fileRef.current?.click();
   };
 
-  const { imagem, nome } = useAuth();
+  const imagem = useAuthStore((state) => state.imagem);
+  const nome = useAuthStore((state) => state.nome);
+
+  //
+
   const profileDefault = "/avatar-placeholder.svg";
   const imgInputBlockMBClass =
     buttonText === "Save changes" ? "mb-0 md:mb-2" : "mb-2";

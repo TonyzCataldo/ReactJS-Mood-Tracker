@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useEffect, useState, useRef } from "react";
 import Header from "../components/Header";
-import { useAuth } from "../context/AuthContext";
+//import { useAuth } from "../context/AuthContext";
 import DefaultContainer from "../components/DefaultContainer";
 import SettingsHeader from "../components/SettingsHeader";
 import ProfileForm from "../components/ProfileForm";
@@ -14,35 +14,73 @@ import TrendContainer from "../components/TrendContainer";
 import TodayMood from "../components/TodayMood";
 import TodaySleep from "../components/TodaySleep";
 import TodayReflection from "../components/TodayReflection";
+import { useVisibleStore } from "../store/useVisibleStore";
+import { useAuthStore } from "../store/useAuthStore";
+import { useUserDataStore } from "../store/useUserDataStore";
+import api from "../axios/api";
 
 const Dashboard = () => {
-  const {
-    nome,
-    email,
-    imagem,
-    setNome,
-    setEmail,
-    setImagem,
-    setLogedToday,
-    logedToday,
-    setUserMoodRecord,
-    fetchUserMoodRecords,
-    setOnboardingRequired,
-    setIsAuthenticated,
-  } = useAuth();
-  const [imagemCarregou, setImagemCarregou] = useState(false);
+  // const {
+  // nome,
+  // email,
+  //  imagem,
+  // setNome,
+  // setEmail,
+  // setImagem,
+  //  setLogedToday,
+  //  logedToday,
+  //  setUserMoodRecord,
+  //  fetchUserMoodRecords,
+  //   setOnboardingRequired,
+  // setIsAuthenticated,
+  // } = useAuth();
+
+  //imports do AuthStore
+  const token = useAuthStore((state) => state.token);
+  const nome = useAuthStore((state) => state.nome);
+  const email = useAuthStore((state) => state.email);
+  const imagem = useAuthStore((state) => state.imagem);
+  const isHydrated = useAuthStore((state) => state.isHydrated);
+
+  const setNome = useAuthStore((state) => state.setNome);
+  const setImagem = useAuthStore((state) => state.setImagem);
+  const setEmail = useAuthStore((state) => state.setEmail);
+  const resetAuth = useAuthStore((state) => state.resetAuth);
+  //
+
+  //imports do UserDataStore
+  const setLogedToday = useUserDataStore((state) => state.setLogedToday);
+  const setUserMoodRecord = useUserDataStore(
+    (state) => state.setUserMoodRecord
+  );
+  const logedToday = useUserDataStore((state) => state.logedToday);
+
+  //
+
+  //imports do VisibleStore
+  const settingsIsVisible = useVisibleStore((state) => state.settingsIsVisible);
+  const logIsVisible = useVisibleStore((state) => state.logIsVisible);
+  const setSettingsIsVisible = useVisibleStore(
+    (state) => state.setSettingsIsVisible
+  );
+  const setLogIsVisible = useVisibleStore((state) => state.setLogIsVisible);
+  //
+
+  console.log("DASHBOARD RENDER");
   const [fetchingRecords, setFetchingRecords] = useState(true);
 
-  const [settingsIsVisible, setSettingsIsVisible] = useState(false);
-  const [logIsVisible, setLogIsVisible] = useState(false);
+  //const [settingsIsVisible, setSettingsIsVisible] = useState(false);
+  //const [logIsVisible, setLogIsVisible] = useState(false);
 
   const [phase, setPhase] = useState(0);
 
   const nameRef = useRef<HTMLInputElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
+  //
+
   const fetchUserData = async () => {
-    const token = localStorage.getItem("token");
+    //const token = localStorage.getItem("token");
     if (!token) return;
 
     try {
@@ -55,9 +93,9 @@ const Dashboard = () => {
       const { nome, imagem_url, email } = res.data;
 
       // salva no localStorage
-      localStorage.setItem("nome", nome);
-      localStorage.setItem("imagem_url", imagem_url);
-      localStorage.setItem("email", email);
+      //localStorage.setItem("nome", nome);
+      //localStorage.setItem("imagem_url", imagem_url);
+      //localStorage.setItem("email", email);
 
       setNome(nome); // ⬅️ atualiza a tela
       setImagem(imagem_url);
@@ -67,31 +105,32 @@ const Dashboard = () => {
     }
   };
 
+  //
   const handleFinish = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const name = nameRef.current?.value;
     const file = fileRef.current?.files?.[0];
-    const token = localStorage.getItem("token");
+    //const token = localStorage.getItem("token");
 
     if (!token) {
-      localStorage.removeItem("token");
-      localStorage.removeItem("usuario_id");
-      localStorage.removeItem("nome");
-      localStorage.removeItem("email");
-      localStorage.removeItem("imagem_url");
-      setNome(null);
-      setEmail(null);
-      setImagem(null);
-      setOnboardingRequired(null);
-      setIsAuthenticated(false);
-
+      //localStorage.removeItem("token");
+      //localStorage.removeItem("usuario_id");
+      //localStorage.removeItem("nome");
+      //localStorage.removeItem("email");
+      //localStorage.removeItem("imagem_url");
+      //setNome(null);
+      //setEmail(null);
+      //setImagem(null);
+      //setOnboardingRequired(null);
+      //setIsAuthenticated(false);
+      resetAuth();
       return;
     }
 
     try {
       // 1. Envia apenas o nome para /onboarding
-      await axios.post(
+      await api.post(
         "https://mood-api-k2mz.onrender.com/onboarding",
         { nome: name || "Jane Appleseed" },
         {
@@ -120,22 +159,22 @@ const Dashboard = () => {
 
       fetchUserData();
     } catch (error) {
-      console.error("Erro no onboarding:", error);
+      console.error("Erro no ao atualizar dados:", error);
     }
   };
 
   //o nome imagem e email é verificado pelo localstorage, então quando monta o componente verifica se tem essas informacoes, se não tiver, roda a funcão que vai puxar no back o nome img e email do usuario e seta automatico tanto no localstorage quanto nos estados.
   useEffect(() => {
-    if (!nome || !imagem || !email) {
-      fetchUserData();
-    }
-  }, []);
+    if (!isHydrated) return;
+    if (nome && email && imagem) return;
+    fetchUserData();
+  }, [isHydrated]);
 
   //Verificar se o usuario logou o humor no dia ao montar o componente para garantir que o usuario logue uma vez somente.
   useEffect(() => {
     const verifyLogedToday = async () => {
       try {
-        const token = localStorage.getItem("token");
+        // const token = localStorage.getItem("token");
         const res = await axios.get(
           "https://mood-api-k2mz.onrender.com/ja-registrou-hoje",
           {
@@ -151,17 +190,39 @@ const Dashboard = () => {
       }
     };
     verifyLogedToday();
-    console.log(logedToday);
+    //console.log(logedToday);
   }, []);
 
   //verifica os registros do usuario ao montar o componente
   useEffect(() => {
+    //const getRecords = async () => {
+    //const records = await fetchUserMoodRecords();
+    //setUserMoodRecord(records);
+    //  setFetchingRecords(false);
+    //};
+
+    //getRecords();
+    const fetchUserMoodRecords = async () => {
+      try {
+        const res = await axios.get(
+          "https://mood-api-k2mz.onrender.com/registros",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        return res.data;
+      } catch (error) {
+        console.error("Erro ao buscar registros:", error);
+        return [];
+      }
+    };
     const getRecords = async () => {
       const records = await fetchUserMoodRecords();
       setUserMoodRecord(records);
       setFetchingRecords(false);
     };
-
     getRecords();
   }, []);
 
@@ -186,11 +247,7 @@ const Dashboard = () => {
             : { display: "none" }
         }
       ></div>
-      <Header
-        imagemCarregou={imagemCarregou}
-        setImagemCarregou={setImagemCarregou}
-        setSettingsIsVisible={setSettingsIsVisible}
-      />
+      <Header />
 
       <DefaultContainer
         py="settings"
@@ -237,7 +294,7 @@ const Dashboard = () => {
           <LogSlider
             phase={phase}
             setPhase={setPhase}
-            setLogIsVisible={setLogIsVisible}
+            //setLogIsVisible={setLogIsVisible}
           />
         </DefaultContainer>
         <div

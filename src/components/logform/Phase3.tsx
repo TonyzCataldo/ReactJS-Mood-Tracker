@@ -1,17 +1,21 @@
 import { useEffect, useState } from "react";
 import type { Dispatch, SetStateAction } from "react";
-import { useAuth } from "../../context/AuthContext";
 import Button from "../Button";
+import { useUserDataStore } from "../../store/useUserDataStore";
 
 type PhaseProps = {
   next: () => void;
   phase: number;
   setPhase?: Dispatch<SetStateAction<number>>;
-  setLogIsVisible?: Dispatch<SetStateAction<boolean>>;
+  setLogIsVisible?: (value: boolean) => void;
 };
 
 const Phase3 = ({ next, phase }: PhaseProps) => {
-  const { setLogData, logError, setLogError } = useAuth();
+  const logData = useUserDataStore((state) => state.logData);
+  const logError = useUserDataStore((state) => state.logError);
+  const setLogError = useUserDataStore((state) => state.setLogError);
+  const setLogData = useUserDataStore((state) => state.setLogData);
+
   const [temporaryDescription, setTemporaryDescription] = useState("");
 
   const phase3Function = (e: React.FormEvent) => {
@@ -19,10 +23,10 @@ const Phase3 = ({ next, phase }: PhaseProps) => {
     if (temporaryDescription === "") {
       setLogError(true);
     } else {
-      setLogData((prev) => ({
-        ...prev,
+      setLogData({
+        ...logData,
         descricao: temporaryDescription,
-      }));
+      });
       setLogError(false);
       next();
     }

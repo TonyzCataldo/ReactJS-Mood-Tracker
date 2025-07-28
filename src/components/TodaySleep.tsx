@@ -1,9 +1,8 @@
 import zzz from "../assets/icon-sleep.svg";
-import { useAuth } from "../context/AuthContext";
+import { useUserDataStore } from "../store/useUserDataStore";
 
 const TodaySleep = () => {
-  const { userMoodRecord } = useAuth();
-
+  const userMoodRecord = useUserDataStore((state) => state.userMoodRecord);
   const sleep =
     userMoodRecord.length >= 1
       ? userMoodRecord[userMoodRecord.length - 1].horas_sono

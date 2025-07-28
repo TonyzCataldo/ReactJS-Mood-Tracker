@@ -4,13 +4,16 @@ import { formReducer, initialState } from "../reducers/authFormReducer";
 import { useReducer, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { useAuth } from "../context/AuthContext";
+//import { useAuth } from "../context/AuthContext";
+import { useAuthStore } from "../store/useAuthStore";
 
 const SignIn = () => {
   const [state, dispatch] = useReducer(formReducer, initialState);
 
   const navigate = useNavigate();
-  const { setIsAuthenticated } = useAuth();
+  //const { setIsAuthenticated } = useAuth();
+  const setIsAuthenticated = useAuthStore((state) => state.setIsAuthenticated);
+  const setToken = useAuthStore((state) => state.setToken);
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,8 +37,9 @@ const SignIn = () => {
         }
       );
 
-      localStorage.setItem("token", response.data.token);
-      localStorage.setItem("usuario_id", response.data.usuario_id);
+      //localStorage.setItem("token", response.data.token);
+      setToken(response.data.token);
+      //localStorage.setItem("usuario_id", response.data.usuario_id);
 
       dispatch({ type: "RESET_FORM" });
       setIsAuthenticated(true);
@@ -49,11 +53,12 @@ const SignIn = () => {
   };
 
   useEffect(() => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("usuario_id");
-    localStorage.removeItem("nome");
-    localStorage.removeItem("email");
-    localStorage.removeItem("imagem_url");
+    //localStorage.removeItem("token");
+    //localStorage.removeItem("usuario_id");
+    //localStorage.removeItem("nome");
+    // localStorage.removeItem("email");
+    //localStorage.removeItem("imagem_url");
+    useAuthStore.getState().resetAuth();
   }, []);
 
   return (

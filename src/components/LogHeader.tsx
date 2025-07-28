@@ -1,5 +1,5 @@
 type LogHeaderProps = {
-  phase: number; // ou mais específico: 0 | 1 | 2 | 3
+  phase: number;
 };
 
 const LogHeader = ({ phase }: LogHeaderProps) => {

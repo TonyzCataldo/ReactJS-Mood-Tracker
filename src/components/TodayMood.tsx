@@ -1,4 +1,3 @@
-import { useAuth } from "../context/AuthContext";
 import veryHappyEmoji from "../assets/icon-very-happy-color.svg";
 import happyEmoji from "../assets/icon-happy-color.svg";
 import neutralEmoji from "../assets/icon-neutral-color.svg";
@@ -7,11 +6,12 @@ import verySadEmoji from "../assets/icon-very-sad-color.svg";
 import quote from "../assets/icon-quote.svg";
 import moodPhrases from "../data/moodPhrases";
 import { useEffect, useState } from "react";
+import { useUserDataStore } from "../store/useUserDataStore";
 
 type MoodType = "Very Happy" | "Happy" | "Neutral" | "Sad" | "Very Sad";
 
 const TodayMood = () => {
-  const { userMoodRecord } = useAuth();
+  const userMoodRecord = useUserDataStore((state) => state.userMoodRecord);
   const [phrase, setPhrase] = useState("");
 
   // Se o array estiver vazio, não tenta acessar o último item
