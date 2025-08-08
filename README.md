@@ -3,6 +3,7 @@
 ## 🇧🇷 Português
 
 Aplicação web para registrar e acompanhar o humor, sono e emoções diárias. Os usuários podem criar uma conta, fazer check-ins diários e visualizar tendências do seu bem-estar ao longo do tempo.
+https://mood-tracker-umber.vercel.app/
 
 ## 🚀 Funcionalidades
 
@@ -33,6 +34,7 @@ Aplicação web para registrar e acompanhar o humor, sono e emoções diárias. 
 ## 🇺🇸 English
 
 Web application to record and track daily mood, sleep, and emotions. Users can create an account, log daily check-ins, and view their well-being trends over time.
+https://mood-tracker-umber.vercel.app/
 
 ## 🚀 Features
 
