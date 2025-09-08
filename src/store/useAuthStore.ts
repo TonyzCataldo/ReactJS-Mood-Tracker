@@ -23,7 +23,7 @@ type AuthStore = {
 export const useAuthStore = create<AuthStore>()(
   persist(
     (set) => ({
-      isAuthenticated: false, // opcional aqui
+      isAuthenticated: false,
       nome: null,
       email: null,
       imagem: null,
@@ -51,7 +51,7 @@ export const useAuthStore = create<AuthStore>()(
         }),
     }),
     {
-      name: "auth-storage", // nome da chave no localStorage
+      name: "auth-storage",
       partialize: (state) => ({
         nome: state.nome,
         email: state.email,
@@ -64,9 +64,7 @@ export const useAuthStore = create<AuthStore>()(
         if (error) {
           console.error("❌ Error rehydrating Zustand store", error);
         } else {
-          // ✅ Quando a hidratação do Zustand terminar:
           state?.setIsHydrated(true);
-          console.log("✅ Zustand rehydrated!");
         }
       },
     }
