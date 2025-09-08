@@ -1,5 +1,4 @@
-import axios from "axios";
-import { useEffect, useState, useRef } from "react";
+import { useState, useRef } from "react";
 import Header from "../components/Header";
 import DefaultContainer from "../components/DefaultContainer";
 import SettingsHeader from "../components/SettingsHeader";
@@ -16,30 +15,24 @@ import TodayReflection from "../components/TodayReflection";
 import { useVisibleStore } from "../store/useVisibleStore";
 import { useAuthStore } from "../store/useAuthStore";
 import { useUserDataStore } from "../store/useUserDataStore";
-import api from "../axios/api";
+
+import { useFetchUserData } from "../hooks/useFetchUserData/useFetchUserData";
+import { useSendProfileForm } from "../hooks/useSendProfileForm/useSendProfileForm";
+import { useFetchLogedTodayStatus } from "../hooks/useFetchLogedTodayStatus/useFetchLogedTodayStatus";
+import { useFetchUserMoodRecords } from "../hooks/useFetchUserMoodRecords/useFetchUserMoodRecords";
 
 const Dashboard = () => {
   //imports do AuthStore
-  const token = useAuthStore((state) => state.token);
-  const nome = useAuthStore((state) => state.nome);
-  const email = useAuthStore((state) => state.email);
-  const imagem = useAuthStore((state) => state.imagem);
-  const isHydrated = useAuthStore((state) => state.isHydrated);
 
-  const setNome = useAuthStore((state) => state.setNome);
-  const setImagem = useAuthStore((state) => state.setImagem);
-  const setEmail = useAuthStore((state) => state.setEmail);
-  const resetAuth = useAuthStore((state) => state.resetAuth);
+  const nome = useAuthStore((state) => state.nome);
+
+  const imagem = useAuthStore((state) => state.imagem);
+
   //
 
   //imports do UserDataStore
-  const setLogedToday = useUserDataStore((state) => state.setLogedToday);
-  const setUserMoodRecord = useUserDataStore(
-    (state) => state.setUserMoodRecord
-  );
-  const logedToday = useUserDataStore((state) => state.logedToday);
 
-  //
+  const logedToday = useUserDataStore((state) => state.logedToday);
 
   //imports do VisibleStore
   const settingsIsVisible = useVisibleStore((state) => state.settingsIsVisible);
@@ -50,8 +43,6 @@ const Dashboard = () => {
   const setLogIsVisible = useVisibleStore((state) => state.setLogIsVisible);
   //
 
-  const [fetchingRecords, setFetchingRecords] = useState(true);
-
   const [phase, setPhase] = useState(0);
 
   const nameRef = useRef<HTMLInputElement>(null);
@@ -59,127 +50,24 @@ const Dashboard = () => {
 
   //
 
-  const fetchUserData = async () => {
-    if (!token) return;
+  // call the hook useEffect and exposes the function
+  const { fetchUserData } = useFetchUserData();
 
-    try {
-      const res = await axios.get("https://mood-api-k2mz.onrender.com/me", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      const { nome, imagem_url, email } = res.data;
-
-      setNome(nome);
-      setImagem(imagem_url);
-      setEmail(email);
-    } catch (err) {
-      console.error("Erro ao buscar dados do usuário:", err);
-    }
-  };
-
+  const { profileFormFinish } = useSendProfileForm();
   //
-  const handleFinish = async (e: React.FormEvent) => {
-    e.preventDefault();
 
-    const name = nameRef.current?.value;
-    const file = fileRef.current?.files?.[0];
-
-    if (!token) {
-      resetAuth();
-      return;
-    }
-
-    try {
-      // 1. Envia apenas o nome para /onboarding
-      await api.post(
-        "https://mood-api-k2mz.onrender.com/onboarding",
-        { nome: name || "Jane Appleseed" },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      // 2. Se houver imagem, envia separadamente para /upload-image
-      if (file) {
-        const formData = new FormData();
-        formData.append("imagem", file);
-
-        await axios.post(
-          "https://mood-api-k2mz.onrender.com/upload-image",
-          formData,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-      }
-
+  const handleProfileFormFinish = async (e: React.FormEvent) => {
+    const ok = await profileFormFinish(e, nameRef, fileRef);
+    if (ok) {
       fetchUserData();
-    } catch (error) {
-      console.error("Erro no ao atualizar dados:", error);
     }
   };
 
-  //o nome imagem e email é verificado pelo localstorage, então quando monta o componente verifica se tem essas informacoes, se não tiver, roda a funcão que vai puxar no back o nome img e email do usuario e seta automatico tanto no localstorage quanto nos estados.
-  useEffect(() => {
-    if (!isHydrated) return;
-    if (nome && email && imagem) return;
-    fetchUserData();
-  }, [isHydrated]);
+  // hook to verify if user loged mood today
+  useFetchLogedTodayStatus();
 
-  //Verificar se o usuario logou o humor no dia ao montar o componente para garantir que o usuario logue uma vez somente.
-  useEffect(() => {
-    const verifyLogedToday = async () => {
-      try {
-        // const token = localStorage.getItem("token");
-        const res = await axios.get(
-          "https://mood-api-k2mz.onrender.com/ja-registrou-hoje",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        setLogedToday(res.data.ja_registrou);
-      } catch (error) {
-        console.error("Erro ao verificar registro do dia:", error);
-      }
-    };
-    verifyLogedToday();
-  }, []);
-
-  //verifica os registros do usuario ao montar o componente
-  useEffect(() => {
-    const fetchUserMoodRecords = async () => {
-      try {
-        const res = await axios.get(
-          "https://mood-api-k2mz.onrender.com/registros",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        return res.data;
-      } catch (error) {
-        console.error("Erro ao buscar registros:", error);
-        return [];
-      }
-    };
-    const getRecords = async () => {
-      const records = await fetchUserMoodRecords();
-      setUserMoodRecord(records);
-      setFetchingRecords(false);
-    };
-    getRecords();
-  }, []);
+  // call the hook useeffect and exposes the loading state
+  const { fetchingRecords } = useFetchUserMoodRecords();
 
   //espera definir aquilo que for necessario ao montar o componente para somente depois mostrar o dashboard ao user
   if (!nome || !imagem || logedToday === null || fetchingRecords === true)
@@ -213,7 +101,7 @@ const Dashboard = () => {
           buttonPy="1rem"
           nameRef={nameRef}
           fileRef={fileRef}
-          handleFinish={handleFinish}
+          handleFinish={handleProfileFormFinish}
         />
       </DefaultContainer>
 
