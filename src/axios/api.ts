@@ -5,7 +5,6 @@ const api = axios.create({
   baseURL: "https://mood-api-k2mz.onrender.com",
 });
 
-// Interceptor de resposta
 api.interceptors.response.use(
   (response) => response,
   (error) => {
