@@ -1,10 +1,11 @@
 import { useNavigate } from "react-router-dom";
 import logo from "../assets/logo.svg";
-import axios from "axios";
+
 import ProfileForm from "../components/ProfileForm";
 import { useRef } from "react";
 
 import { useAuthStore } from "../store/useAuthStore";
+import { useSendProfileForm } from "../hooks/useSendProfileForm/useSendProfileForm";
 
 const OnBoarding = () => {
   const navigate = useNavigate();
@@ -12,53 +13,17 @@ const OnBoarding = () => {
   const setOnboardingRequired = useAuthStore(
     (state) => state.setOnboardingRequired
   );
-  const token = useAuthStore((state) => state.token);
 
   const nameRef = useRef<HTMLInputElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
-  //funcao que por hora seta no usuario o onboarding como false e direciona pra dashboard depois vai tambem enviar nome e img pro usuario
-  const handleFinish = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const { profileFormFinish } = useSendProfileForm();
 
-    const name = nameRef.current?.value;
-    const file = fileRef.current?.files?.[0];
-
-    try {
-      // 1. Envia apenas o nome para /onboarding
-      await axios.post(
-        "https://mood-api-k2mz.onrender.com/onboarding",
-        { nome: name || "Jane Appleseed" },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      // 2. Se houver imagem, envia separadamente para /upload-image
-      if (file) {
-        const formData = new FormData();
-        formData.append("imagem", file);
-
-        await axios.post(
-          "https://mood-api-k2mz.onrender.com/upload-image",
-          formData,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-      }
-
-      // 3. Atualiza contexto e navega
-
+  const handleProfileFormFinish = async (e: React.FormEvent) => {
+    const ok = await profileFormFinish(e, nameRef, fileRef);
+    if (ok) {
       setOnboardingRequired(false);
       navigate("/dashboard");
-    } catch (error) {
-      console.error("Erro no onboarding:", error);
     }
   };
 
@@ -75,7 +40,7 @@ const OnBoarding = () => {
           </p>
         </div>
         <ProfileForm
-          handleFinish={handleFinish}
+          handleFinish={handleProfileFormFinish}
           nameRef={nameRef}
           fileRef={fileRef}
           buttonText="Start Tracking"
