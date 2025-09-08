@@ -5,46 +5,14 @@ import Dashboard from "./pages/Dashboard";
 import PrivateRoute from "./routes/PrivateRoute";
 import OnBoarding from "./pages/OnBoarding";
 import { useAuthStore } from "./store/useAuthStore";
-import { useEffect } from "react";
-import api from "./axios/api";
-import { useNavigate } from "react-router-dom";
+import { useFetchOnboardingStatus } from "./hooks/useFetchOnboardingStatus/useFetchOnboardingStatus";
 
 function App() {
-  const navigate = useNavigate();
-
-  //
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const onboardingRequired = useAuthStore((state) => state.onboardingRequired);
   const isHydrated = useAuthStore((state) => state.isHydrated);
-  const token = useAuthStore((state) => state.token);
-  const setOnboardingRequired = useAuthStore(
-    (state) => state.setOnboardingRequired
-  );
-  const resetAuth = useAuthStore((state) => state.resetAuth);
 
-  useEffect(() => {
-    if (!isHydrated) return;
-    if (isAuthenticated) {
-      const fetchOnboardingStatus = async () => {
-        try {
-          const res = await api.get("/check-onboarding", {
-            headers: { Authorization: `Bearer ${token}` },
-          });
-
-          setOnboardingRequired(res.data.onboarding_required);
-        } catch (error) {
-          console.error("Erro ao checar onboarding:", error);
-          resetAuth();
-          navigate("/signin");
-        }
-      };
-      fetchOnboardingStatus();
-    }
-  }, [isHydrated, isAuthenticated]);
-
-  if (isHydrated && isAuthenticated && onboardingRequired === null) {
-    return null;
-  }
+  useFetchOnboardingStatus();
 
   return (
     <>
