@@ -10,7 +10,6 @@ import { useFetchOnboardingStatus } from "./hooks/useFetchOnboardingStatus/useFe
 function App() {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const onboardingRequired = useAuthStore((state) => state.onboardingRequired);
-  const isHydrated = useAuthStore((state) => state.isHydrated);
 
   useFetchOnboardingStatus();
 
