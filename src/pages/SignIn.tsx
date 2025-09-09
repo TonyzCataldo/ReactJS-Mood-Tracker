@@ -1,65 +1,12 @@
 import logo from "../assets/logo.svg";
 import SignMain from "../components/SignMain";
-import { formReducer, initialState } from "../reducers/authFormReducer";
-import { useReducer, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
-//import { useAuth } from "../context/AuthContext";
-import { useAuthStore } from "../store/useAuthStore";
+import { useSignIn } from "../hooks/useSignIn/useSignIn";
+import { useCleanAuthGuard } from "../hooks/useCleanAuthGuard/useCleanAuthGuard";
 
 const SignIn = () => {
-  const [state, dispatch] = useReducer(formReducer, initialState);
+  const { handleSignIn, state, dispatch } = useSignIn();
 
-  const navigate = useNavigate();
-  //const { setIsAuthenticated } = useAuth();
-  const setIsAuthenticated = useAuthStore((state) => state.setIsAuthenticated);
-  const setToken = useAuthStore((state) => state.setToken);
-
-  const handleSignIn = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    //tratamento do input email
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(state.email)) {
-      dispatch({
-        type: "SET_ERRO",
-        payload: "Please enter a valid email address.",
-      });
-      return;
-    }
-
-    try {
-      const response = await axios.post(
-        "https://mood-api-k2mz.onrender.com/login",
-        {
-          email: state.email,
-          senha: state.senha,
-        }
-      );
-
-      //localStorage.setItem("token", response.data.token);
-      setToken(response.data.token);
-      //localStorage.setItem("usuario_id", response.data.usuario_id);
-
-      dispatch({ type: "RESET_FORM" });
-      setIsAuthenticated(true);
-      navigate("/dashboard");
-    } catch (err: any) {
-      dispatch({
-        type: "SET_ERRO",
-        payload: err.response?.data?.msg || "Error in log in",
-      });
-    }
-  };
-
-  useEffect(() => {
-    //localStorage.removeItem("token");
-    //localStorage.removeItem("usuario_id");
-    //localStorage.removeItem("nome");
-    // localStorage.removeItem("email");
-    //localStorage.removeItem("imagem_url");
-    useAuthStore.getState().resetAuth();
-  }, []);
+  useCleanAuthGuard();
 
   return (
     <div className="flex flex-col items-center py-20">
