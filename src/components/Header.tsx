@@ -1,8 +1,9 @@
 import logo from "../assets/logo.svg";
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState } from "react";
 
 import ProfileContainer from "./ProfileContainer";
 import { useAuthStore } from "../store/useAuthStore";
+import { useCloseOnClickOut } from "../hooks/useCloseOnClickOut/useCloseOnClickOut";
 
 const Header = () => {
   const imagem = useAuthStore((state) => state.imagem);
@@ -11,33 +12,17 @@ const Header = () => {
   const botaoRef = useRef<HTMLButtonElement>(null);
   const svgRef = useRef<HTMLDivElement>(null);
 
+  const [profileIsVisible, setProfileIsVisible] = useState(false);
+  const refProfileContainer = useRef<HTMLDivElement>(null);
+
   const toggleProfileVisible = () => {
     setProfileIsVisible((prev) => !prev);
   };
 
-  const [profileIsVisible, setProfileIsVisible] = useState(false);
-  const refProfileContainer = useRef<HTMLDivElement>(null);
-
-  const handleClickOutside = (event: MouseEvent) => {
-    const target = event.target as Node;
-
-    const clicouFora =
-      (!refProfileContainer.current ||
-        !refProfileContainer.current.contains(target)) &&
-      (!botaoRef.current || !botaoRef.current.contains(target)) &&
-      (!svgRef.current || !svgRef.current.contains(target));
-
-    if (clicouFora) {
-      setProfileIsVisible(false);
-    }
-  };
-
-  useEffect(() => {
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
+  useCloseOnClickOut({
+    internalComponents: [refProfileContainer, botaoRef, svgRef],
+    setIsVisible: setProfileIsVisible,
+  });
 
   return (
     <header className="flex relative items-center w-[91.47%] md:w-[91.665%] max-w-[73.125rem]">
@@ -84,11 +69,12 @@ const Header = () => {
           />
         </svg>
       </div>
-      <ProfileContainer
-        profileIsVisible={profileIsVisible}
-        refProfileContainer={refProfileContainer}
-        setProfileIsVisible={setProfileIsVisible}
-      />
+      {profileIsVisible && (
+        <ProfileContainer
+          refProfileContainer={refProfileContainer}
+          setProfileIsVisible={setProfileIsVisible}
+        />
+      )}
     </header>
   );
 };
