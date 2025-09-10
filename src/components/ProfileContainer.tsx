@@ -3,13 +3,11 @@ import { useVisibleStore } from "../store/useVisibleStore";
 import { useAuthStore } from "../store/useAuthStore";
 
 type ProfileContainer = {
-  profileIsVisible: boolean;
   refProfileContainer: React.RefObject<HTMLDivElement | null>;
   setProfileIsVisible: Dispatch<SetStateAction<boolean>>;
 };
 
 const ProfileContainer = ({
-  profileIsVisible,
   refProfileContainer,
   setProfileIsVisible,
 }: ProfileContainer) => {
@@ -28,7 +26,6 @@ const ProfileContainer = ({
       ref={refProfileContainer}
       className="absolute flex-col w-full top-[56px] bg-white rounded-[0.5rem] px-4 py-3 sm:w-[12.5rem] sm:right-0"
       style={{
-        display: profileIsVisible ? "flex" : "none",
         boxShadow: "0px 5px 8px 0px rgba(33, 33, 77, 0.16)",
       }}
     >

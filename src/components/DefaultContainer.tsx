@@ -4,7 +4,7 @@ import { useUserDataStore } from "../store/useUserDataStore";
 type DefaultContainerProps = {
   children: React.ReactNode;
   py: string;
-  isVisible: boolean;
+
   setIsVisible: (value: boolean) => void;
   setPhase?: Dispatch<SetStateAction<number>>;
   backgroundGradient?: string;
@@ -13,7 +13,6 @@ type DefaultContainerProps = {
 const DefaultContainer = ({
   children,
   py,
-  isVisible,
   setIsVisible,
   setPhase,
   backgroundGradient,
@@ -27,13 +26,9 @@ const DefaultContainer = ({
   return (
     <div
       style={{
-        ...(!isVisible ? { display: "none" } : { display: "flex" }),
-        ...(backgroundGradient
-          ? {
-              background:
-                "linear-gradient(180deg, #F5F5FF 72.99%, #E0E0FF 100%)",
-            }
-          : {}),
+        background: backgroundGradient
+          ? "linear-gradient(180deg, #F5F5FF 72.99%, #E0E0FF 100%)"
+          : "",
       }}
       className={`flex absolute flex-col px-5 md:px-10 rounded-2xl mt-[4.58rem] md:mt-20 bg-white w-[89.33%] max-w-[37.5rem] gap-6 md:gap-8 z-30 top-0 ${paddingYclassname}`}
     >

@@ -80,6 +80,7 @@ const Dashboard = () => {
 
   return (
     <div className="pt-8 md:pt-10 pb-20 relative flex flex-col items-center">
+      {/* Create a component like modalbackgroundfilter */}
       <div
         className="h-full min-h-dvh absolute bg-neutral-900/70 w-full top-0 z-20"
         style={
@@ -90,23 +91,22 @@ const Dashboard = () => {
       ></div>
       <Header />
 
-      <DefaultContainer
-        py="settings"
-        isVisible={settingsIsVisible}
-        setIsVisible={setSettingsIsVisible}
-      >
-        <SettingsHeader />
-        <ProfileForm
-          buttonText="Save changes"
-          buttonPy="1rem"
-          nameRef={nameRef}
-          fileRef={fileRef}
-          handleFinish={handleProfileFormFinish}
-        />
-      </DefaultContainer>
+      {settingsIsVisible && (
+        <DefaultContainer py="settings" setIsVisible={setSettingsIsVisible}>
+          <SettingsHeader />
+          <ProfileForm
+            buttonText="Save changes"
+            buttonPy="1rem"
+            nameRef={nameRef}
+            fileRef={fileRef}
+            handleFinish={handleProfileFormFinish}
+          />
+        </DefaultContainer>
+      )}
 
       <main className="w-[91.47%] md:w-[91.665%] max-w-[73.125rem] mt-12 md:mt-16 flex flex-col items-center">
         <HelloContainer />
+        {/* create a log today's mood button container */}
         <form
           className={`justify-center my-12 lg:my-16 ${
             logedToday === false ? "flex" : "hidden"
@@ -124,20 +124,18 @@ const Dashboard = () => {
             letterSpacing="0px"
           />
         </form>
-        <DefaultContainer
-          py="default"
-          isVisible={logIsVisible}
-          setIsVisible={setLogIsVisible}
-          setPhase={setPhase}
-          backgroundGradient="linear-gradient(180deg, #F5F5FF 72.99%, #E0E0FF 100%)"
-        >
-          <LogHeader phase={phase} />
-          <LogSlider
-            phase={phase}
+        {logIsVisible && (
+          <DefaultContainer
+            py="default"
+            setIsVisible={setLogIsVisible}
             setPhase={setPhase}
-            //setLogIsVisible={setLogIsVisible}
-          />
-        </DefaultContainer>
+            backgroundGradient="linear-gradient(180deg, #F5F5FF 72.99%, #E0E0FF 100%)"
+          >
+            <LogHeader phase={phase} />
+            <LogSlider phase={phase} setPhase={setPhase} />
+          </DefaultContainer>
+        )}
+
         <div
           className={`${
             logedToday === true ? "flex" : "hidden"
