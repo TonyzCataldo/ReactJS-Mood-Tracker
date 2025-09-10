@@ -1,10 +1,11 @@
 import logo from "../assets/logo.svg";
 import SignMain from "../components/SignMain";
 import { formReducer, initialState } from "../reducers/authFormReducer";
-import { useReducer, useEffect } from "react";
+import { useReducer } from "react";
 import axios from "axios";
 import { AxiosError } from "axios";
 import { useAuthStore } from "../store/useAuthStore";
+import { useCleanAuthGuard } from "../hooks/useCleanAuthGuard/useCleanAuthGuard";
 
 const SignUp = () => {
   const [state, dispatch] = useReducer(formReducer, initialState);
@@ -55,9 +56,7 @@ const SignUp = () => {
     }
   };
 
-  useEffect(() => {
-    useAuthStore.getState().resetAuth();
-  }, []);
+  useCleanAuthGuard();
 
   return (
     <div className="flex flex-col items-center py-20">
